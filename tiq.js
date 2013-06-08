@@ -45,18 +45,9 @@ var tiq = (function() {
     },
 
     format: function(date, formatStr) {
-      var usedRules = _.reduce(formatFunctions, function(mem, fn, rule) {
-        if (formatStr.match(rule)) {
-          mem[rule] = fn
-        }
-        return mem;
-      }, {});
-
-      _.each(usedRules, function(fn, rule) {
-        formatStr = formatStr.replace(new RegExp(rule, "g"), fn(date));
-      });
-
-      return formatStr;
+      return _.reduce(formatFunctions, function(str, fn, rule) {
+        return str.replace(new RegExp(rule, "g"), (str.match(rule) ? fn(date) : ""));
+      }, formatStr);
     }
 
   };
