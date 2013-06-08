@@ -31,25 +31,31 @@ var tiq = (function() {
     "mm"  : _.compose(padNumber, executeOnParam("getMinutes")),
     "m"   : executeOnParam("getMinutes"),
     "SS"  : _.compose(padNumber, executeOnParam("getSeconds")),
-    "S"   : executeOnParam("getSeconds"),
     "ss"  : _.compose(padNumber, executeOnParam("getSeconds")),
+    "S"   : executeOnParam("getSeconds"),
     "s"   : executeOnParam("getSeconds")
   };
 
-  return {
-
-    parse: function(str) {
-      if (typeof str !== "string" || str === "") {
-        return new Date();
-      }
-    },
-
-    format: function(date, formatStr) {
-      return _.reduce(formatFunctions, function(str, fn, rule) {
-        return str.replace(new RegExp(rule, "g"), (str.match(rule) ? fn(date) : ""));
-      }, formatStr);
+  var parse = function(str) {
+    if (typeof str !== "string" || str === "") {
+      return new Date();
     }
+  };
 
+  var format = function(date, formatStr) {
+    return _.reduce(formatFunctions, function(str, fn, rule) {
+      return (str.match(rule) ? str.replace(new RegExp(rule, "g"), fn(date)) : str);
+    }, formatStr || "");
+  };
+
+  var isToday = function(date) {
+    return format(date, "YYYYMD") === format(new Date(), "YYYYMD");
+  };
+
+  return {
+    parse: parse,
+    format: format,
+    isToday: isToday
   };
 
 })();

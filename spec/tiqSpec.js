@@ -45,3 +45,14 @@ describe('tiq.format', function() {
   });
 
 });
+
+describe('tiq.isToday', function() {
+
+  var date = new Date("2.3.2012 01:03:02");
+
+  it('knows if it is today', function() {
+    expect(tiq.isToday(date)).toEqual(false);
+    expect(tiq.isToday(new Date())).toEqual(true);
+  });
+
+});
