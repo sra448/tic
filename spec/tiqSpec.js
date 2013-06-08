@@ -4,18 +4,44 @@ describe('tiq.parse', function() {
     expect(tiq.parse("")).toEqual(new Date());
   });
 
-  it("returns a date object, given a date string", function() {
-    expect(tiq.parse("Thu Jun 06 2013 19:40:02 GMT+0200 (CEST)")).toEqual(new Date("Thu Jun 06 2013 19:40:02 GMT+0200 (CEST)"));
-  });
+  // it("returns a date object, given a date string", function() {
+  //   expect(tiq.parse("Thu Jun 06 2013 19:40:02 GMT+0200 (CEST)")).toEqual(new Date("Thu Jun 06 2013 19:40:02 GMT+0200 (CEST)"));
+  // });
 
-  it("returns a date object with ", function() {
-    expect(tiq.parse("06.06.2013")).toEqual(new Date("Thu Jun 06 2013 00:00:00 GMT+0200 (CEST)"));
-    expect(tiq.parse("6.6.2013")).toEqual(new Date("Thu Jun 06 2013 00:00:00 GMT+0200 (CEST)"));
-    expect(tiq.parse("20.6.2013")).toEqual(new Date("Thu Jun 20 2013 00:00:00 GMT+0200 (CEST)"));
-  });
+  // it("returns a date object with ", function() {
+  //   expect(tiq.parse("06.06.2013")).toEqual(new Date("Thu Jun 06 2013 00:00:00 GMT+0200 (CEST)"));
+  //   expect(tiq.parse("6.6.2013")).toEqual(new Date("Thu Jun 06 2013 00:00:00 GMT+0200 (CEST)"));
+  //   expect(tiq.parse("20.6.2013")).toEqual(new Date("Thu Jun 20 2013 00:00:00 GMT+0200 (CEST)"));
+  // });
 
-  it("returns a date object, given a date strding", function() {
-    expect(tiq.parse("Thu Jun 06 2013 19:40:02 GMT+0200 (CEST)")).toEqual(new Date("Thu Jun 06 2013 19:40:02 GMT+0200 (CEST)"));
+  // it("returns a date object, given a date strding", function() {
+  //   expect(tiq.parse("Thu Jun 06 2013 19:40:02 GMT+0200 (CEST)")).toEqual(new Date("Thu Jun 06 2013 19:40:02 GMT+0200 (CEST)"));
+  // });
+
+});
+
+describe('tiq.format', function() {
+
+  var date = new Date("2.3.2012 01:03:02");
+
+  it('knows the rules', function() {
+
+    expect(tiq.format(date, "YYYY")).toEqual("2012");
+    expect(tiq.format(date, "YY")).toEqual("12");
+    expect(tiq.format(date, "MM")).toEqual("02");
+    expect(tiq.format(date, "M")).toEqual("2");
+    expect(tiq.format(date, "DD")).toEqual("03");
+    expect(tiq.format(date, "D")).toEqual("3");
+    expect(tiq.format(date, "d")).toEqual("5");
+    expect(tiq.format(date, "HH")).toEqual("01");
+    expect(tiq.format(date, "H")).toEqual("1");
+    expect(tiq.format(date, "mm")).toEqual("03");
+    expect(tiq.format(date, "m")).toEqual("3");
+    expect(tiq.format(date, "SS")).toEqual("02");
+    expect(tiq.format(date, "S")).toEqual("2");
+    expect(tiq.format(date, "ss")).toEqual("02");
+    expect(tiq.format(date, "s")).toEqual("2");
+
   });
 
 });
