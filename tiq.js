@@ -18,7 +18,7 @@ var tiq = (function() {
     }
   };
 
-  var formatFunctions = {
+  var dateFormatFunctions = {
     "YYYY": executeOnParam("getFullYear"),
     "YY"  : function(date) { return (""+date.getFullYear()).substr(2); },
     "MM"  : _.compose(padNumber, increment, executeOnParam("getMonth")),
@@ -43,9 +43,33 @@ var tiq = (function() {
   };
 
   var format = function(date, formatStr) {
-    return _.reduce(formatFunctions, function(str, fn, rule) {
+    return _.reduce(dateFormatFunctions, function(str, fn, rule) {
       return (str.match(rule) ? str.replace(new RegExp(rule, "g"), fn(date)) : str);
     }, formatStr || "");
+  };
+
+  var isToday = function(date) {
+    return format(date, "YYYYMD") === format(new Date(), "YYYYMD");
+  };
+
+  var milisecondFactor = {
+    "miiseconds": 1,
+    "seconds"   : 1e3,
+    "minutes"   : 6e4,
+    "hours"     : 36e5,
+    "days"      : 864e5,
+    "weeks"     : 6048e5,
+    "months"    : 2592e6,
+    "years"     : 31536e6
+  };
+
+  var add = function(date, val, unit) {
+    // std unit is second
+    return new Date(date.getTime() + (val * (unit && milisecondFactor[unit.toLowerCase()] || 1e3)))
+  };
+
+  var substract = function(date, val, unit) {
+    return add(date, -val, unit);
   };
 
   var isToday = function(date) {
@@ -55,6 +79,8 @@ var tiq = (function() {
   return {
     parse: parse,
     format: format,
+    add: add,
+    substract: substract,
     isToday: isToday
   };
 

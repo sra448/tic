@@ -56,3 +56,14 @@ describe('tiq.isToday', function() {
   });
 
 });
+
+describe('tiq.add / tiq.remove', function() {
+
+  var date = new Date("1.1.2012 01:01:01");
+
+  it('know how to add time to a date', function() {
+    expect(tiq.format(tiq.add(date, 1, 'days'), "DD")).toEqual("02");
+    // expect(tiq.format(tiq.add(date, 1, 'year'), "YYYY")).toEqual("2013");
+  });
+
+});
