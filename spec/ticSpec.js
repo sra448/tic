@@ -1,20 +1,29 @@
 describe('tic.parse', function() {
 
+  it("works like a reverse format and takes a formatStr as an optional parameter", function() {
+
+    expect(tic.parse("24122013", "DDMMYYYY")).toEqual(new Date("12.24.2013 00:00:00"));
+    expect(tic.parse("24.12.2013", "DD.MM.YYYY")).toEqual(new Date("12.24.2013 00:00:00"));
+    expect(tic.parse("12/24/2013", "MM/DD/YYYY")).toEqual(new Date("12.24.2013 00:00:00"));
+    expect(tic.parse("24-12-2013", "DD-MM-YYYY")).toEqual(new Date("12.24.2013 00:00:00"));
+
+    expect(tic.parse("241220131335", "DDMMYYYYHHmm")).toEqual(new Date("12.24.2013 13:35:00"));
+    expect(tic.parse("24.12.2013 13:35", "DD.MM.YYYY HH:mm")).toEqual(new Date("12.24.2013 13:35:00"));
+    expect(tic.parse("12/24/2013 at 1335", "MM/DD/YYYY at HHmm")).toEqual(new Date("12.24.2013 13:35:00"));
+    expect(tic.parse("24-12-2013 13-35", "DD-MM-YYYY HH-mm")).toEqual(new Date("12.24.2013 13:35:00"));
+
+  })
+
   it("returns a date object of the current date, given an empty string", function() {
-    expect(tic.parse("")).toEqual(new Date());
+    var date = new Date();
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+    expect(tic.parse("")).toEqual(date);
   });
 
   // it("returns a date object, given a date string", function() {
-  //   expect(tic.parse("Thu Jun 06 2013 19:40:02 GMT+0200 (CEST)")).toEqual(new Date("Thu Jun 06 2013 19:40:02 GMT+0200 (CEST)"));
-  // });
-
-  // it("returns a date object with ", function() {
-  //   expect(tic.parse("06.06.2013")).toEqual(new Date("Thu Jun 06 2013 00:00:00 GMT+0200 (CEST)"));
-  //   expect(tic.parse("6.6.2013")).toEqual(new Date("Thu Jun 06 2013 00:00:00 GMT+0200 (CEST)"));
-  //   expect(tic.parse("20.6.2013")).toEqual(new Date("Thu Jun 20 2013 00:00:00 GMT+0200 (CEST)"));
-  // });
-
-  // it("returns a date object, given a date strding", function() {
   //   expect(tic.parse("Thu Jun 06 2013 19:40:02 GMT+0200 (CEST)")).toEqual(new Date("Thu Jun 06 2013 19:40:02 GMT+0200 (CEST)"));
   // });
 

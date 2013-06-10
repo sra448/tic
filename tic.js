@@ -3,9 +3,10 @@ var tic = (function() {
   // tic has some languages
   var langs = {
     "en-US": {
-      "days"       : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-      "months"     : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-      "monthsShort": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+      "stdDateInputFormat": "MMDDYYYY",
+      "days"              : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      "months"            : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+      "monthsShort"       : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     }
   };
 
@@ -49,8 +50,44 @@ var tic = (function() {
     }
   };
 
-  var parse = function(str) {
-    if (typeof str !== "string" || str === "") {
+  var parseFunctions = {
+    "YYYY": function(date, val) { return new Date(date.setYear(val)); },
+    "YY"  : function(date, val) { return new Date(date.setYear("20"+val)); },
+    "MM"  : function(date, val) { return new Date(date.setMonth(+val-1)); },
+    "M"   : function(date, val) { return new Date(date.setMonth(+val-1)); },
+    "DD"  : function(date, val) { return new Date(date.setDate(val)); },
+    "D"   : function(date, val) { return new Date(date.setDate(val)); },
+    "HH"  : function(date, val) { return new Date(date.setHours(val)); },
+    "H"   : function(date, val) { return new Date(date.setHours(val)); },
+    "mm"  : function(date, val) { return new Date(date.setMinutes(val)); },
+    "m"   : function(date, val) { return new Date(date.setMinutes(val)); }
+  };
+
+  var parseFormatRegex = new RegExp(_.keys(parseFunctions).join("|"), "g");
+
+  var parse = function(str, formatStr) {
+    if (typeof str === "string") {
+      var date = new Date(),
+          groups = (formatStr || "").match(parseFormatRegex);
+
+      // the default date is today at 00:00:00
+      date.setHours(0);
+      date.setMinutes(0);
+      date.setSeconds(0);
+      date.setMilliseconds(0);
+
+      // apply all the rules from formatStr to our date
+      date = _.reduce(groups, function(mem, rule) {
+        var val = str.substr(formatStr.indexOf(rule), rule.length);
+        return parseFunctions[rule] !== undefined ? parseFunctions[rule](mem, val) : mem;
+      }, date);
+
+      return date;
+    } else if (typeof str === "number") {
+      // if not given a number, pass right into a new Date object
+      return new Date(str);
+    } else {
+      // if we dont know better, we just return a the current date
       return new Date();
     }
   };
@@ -103,20 +140,20 @@ var tic = (function() {
     return format(date, "YYYYMD") === format(new Date(), "YYYYMD");
   };
 
-  var milisecondFactors = {
-    "miiseconds": 1,       "miisecond": 1,
-    "seconds"   : 1e3,     "second"   : 1e3,
-    "minutes"   : 6e4,     "minute"   : 6e4,
-    "hours"     : 36e5,    "hour"     : 36e5,
-    "days"      : 864e5,   "day"      : 864e5,
-    "weeks"     : 6048e5,  "week"     : 6048e5,
-    "months"    : 2592e6,  "month"    : 2592e6,
-    "years"     : 31536e6, "year"     : 31536e6
+  var millisecondFactors = {
+    "milliseconds": 1,       "millisecond": 1,
+    "seconds"     : 1e3,     "second"   : 1e3,
+    "minutes"     : 6e4,     "minute"   : 6e4,
+    "hours"       : 36e5,    "hour"     : 36e5,
+    "days"        : 864e5,   "day"      : 864e5,
+    "weeks"       : 6048e5,  "week"     : 6048e5,
+    "months"      : 2592e6,  "month"    : 2592e6,
+    "years"       : 31536e6, "year"     : 31536e6
   };
 
   var add = function(date, val, unit) {
     // std unit is seconds
-    return new Date(date.getTime() + (val * (unit && milisecondFactors[unit.toLowerCase()] || 1e3)))
+    return new Date(date.getTime() + (val * (unit && millisecondFactors[unit.toLowerCase()] || 1e3)))
   };
 
   var substract = function(date, val, unit) {
