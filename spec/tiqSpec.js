@@ -28,10 +28,16 @@ describe('tiq.format', function() {
 
     expect(tiq.format(date, "YYYY")).toEqual("2012");
     expect(tiq.format(date, "YY")).toEqual("12");
+    expect(tiq.format(date, "MMMM")).toEqual("February");
+    expect(tiq.format(date, "MMM")).toEqual("Feb");
     expect(tiq.format(date, "MM")).toEqual("02");
     expect(tiq.format(date, "M")).toEqual("2");
+    // expect(tiq.format(date, "DDD")).toEqual("2"); not yet implemented (dayOfYear)
     expect(tiq.format(date, "DD")).toEqual("03");
     expect(tiq.format(date, "D")).toEqual("3");
+    expect(tiq.format(date, "dddd")).toEqual("Friday");
+    expect(tiq.format(date, "ddd")).toEqual("Fri");
+    expect(tiq.format(date, "dd")).toEqual("Fr");
     expect(tiq.format(date, "d")).toEqual("5");
     expect(tiq.format(date, "HH")).toEqual("01");
     expect(tiq.format(date, "H")).toEqual("1");
