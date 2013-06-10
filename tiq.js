@@ -49,6 +49,12 @@ var tiq = (function() {
     }
   };
 
+  var parse = function(str) {
+    if (typeof str !== "string" || str === "") {
+      return new Date();
+    }
+  };
+
   var dateFormatFunctions = {
     "YYYY": getExecuteOnParamFn("getFullYear"),
     "YY"  : _.compose(getConfiguredSubstrFn(2), getExecuteOnParamFn("getFullYear")),
@@ -72,17 +78,25 @@ var tiq = (function() {
     "s"   : getExecuteOnParamFn("getSeconds")
   };
 
-  var parse = function(str) {
-    if (typeof str !== "string" || str === "") {
-      return new Date();
+  var dateFormatFunctionsRegex = new RegExp(_.keys(dateFormatFunctions).join("|"));
+
+  var formatStrToArray = function(formatStr) {
+    if (dateFormatFunctionsRegex.test(formatStr)) {
+      var group = formatStr.match(dateFormatFunctionsRegex)[0],
+          groupId = formatStr.indexOf(group),
+          preGroup = groupId !== 0 ? formatStr.substr(0, groupId) : undefined,
+          newFormatStr = formatStr.substr(groupId + group.length);
+
+      return (preGroup ? [preGroup, group] : [group]).concat(formatStrToArray(newFormatStr))
+    } else {
+      return [formatStr];
     }
   };
 
   var format = function(date, formatStr) {
-    return _.reduce(dateFormatFunctions, function(str, fn, rule) {
-      // console.log(str, str.match(rule), (str.match(rule) ? str.replace(new RegExp(rule, "g"), fn(date)) : str));
-      return (str.match(rule) ? str.replace(new RegExp(rule, "g"), fn(date)) : str);
-    }, formatStr || "");
+    return _.map(formatStrToArray(formatStr), function(group) {
+      return dateFormatFunctions[group] !== undefined ? dateFormatFunctions[group](date) : group;
+    }).join();
   };
 
   var isToday = function(date) {
