@@ -23,32 +23,26 @@ describe('tiq.parse', function() {
 describe('tiq.format', function() {
 
   var date = new Date("2.3.2012 01:03:02");
-
-  it('knows the rules', function() {
-
-    expect(tiq.format(date, "YYYY")).toEqual("2012");
-    expect(tiq.format(date, "YY")).toEqual("12");
-    expect(tiq.format(date, "MMMM")).toEqual("February");
-    expect(tiq.format(date, "MMM")).toEqual("Feb");
-    expect(tiq.format(date, "MM")).toEqual("02");
-    expect(tiq.format(date, "M")).toEqual("2");
-    // expect(tiq.format(date, "DDD")).toEqual("2"); not yet implemented (dayOfYear)
-    expect(tiq.format(date, "DD")).toEqual("03");
-    expect(tiq.format(date, "D")).toEqual("3");
-    expect(tiq.format(date, "dddd")).toEqual("Friday");
-    expect(tiq.format(date, "ddd")).toEqual("Fri");
-    expect(tiq.format(date, "dd")).toEqual("Fr");
-    expect(tiq.format(date, "d")).toEqual("5");
-    expect(tiq.format(date, "HH")).toEqual("01");
-    expect(tiq.format(date, "H")).toEqual("1");
-    expect(tiq.format(date, "mm")).toEqual("03");
-    expect(tiq.format(date, "m")).toEqual("3");
-    expect(tiq.format(date, "SS")).toEqual("02");
-    expect(tiq.format(date, "S")).toEqual("2");
-    expect(tiq.format(date, "ss")).toEqual("02");
-    expect(tiq.format(date, "s")).toEqual("2");
-
-  });
+  it("handles YYYY", function() { expect(tiq.format(date, "YYYY")).toEqual("2012"); });
+  it("handles YY", function() { expect(tiq.format(date, "YY")).toEqual("12"); });
+  it("handles MMMM", function() { expect(tiq.format(date, "MMMM")).toEqual("February"); });
+  it("handles MMM", function() { expect(tiq.format(date, "MMM")).toEqual("Feb"); });
+  it("handles MM", function() { expect(tiq.format(date, "MM")).toEqual("02"); });
+  it("handles M", function() { expect(tiq.format(date, "M")).toEqual("2"); });
+  it("handles DD", function() { expect(tiq.format(date, "DD")).toEqual("03"); });
+  it("handles D", function() { expect(tiq.format(date, "D")).toEqual("3"); });
+  it("handles dddd", function() { expect(tiq.format(date, "dddd")).toEqual("Friday"); });
+  it("handles ddd", function() { expect(tiq.format(date, "ddd")).toEqual("Fri"); });
+  it("handles dd", function() { expect(tiq.format(date, "dd")).toEqual("Fr"); });
+  it("handles d", function() { expect(tiq.format(date, "d")).toEqual("5"); });
+  it("handles HH", function() { expect(tiq.format(date, "HH")).toEqual("01"); });
+  it("handles H", function() { expect(tiq.format(date, "H")).toEqual("1"); });
+  it("handles mm", function() { expect(tiq.format(date, "mm")).toEqual("03"); });
+  it("handles m", function() { expect(tiq.format(date, "m")).toEqual("3"); });
+  it("handles SS", function() { expect(tiq.format(date, "SS")).toEqual("02"); });
+  it("handles S", function() { expect(tiq.format(date, "S")).toEqual("2"); });
+  it("handles ss", function() { expect(tiq.format(date, "ss")).toEqual("02"); });
+  it("handles s", function() { expect(tiq.format(date, "s")).toEqual("2"); });
 
 });
 

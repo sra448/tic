@@ -96,7 +96,7 @@ var tiq = (function() {
   var format = function(date, formatStr) {
     return _.map(formatStrToArray(formatStr), function(group) {
       return dateFormatFunctions[group] !== undefined ? dateFormatFunctions[group](date) : group;
-    }).join();
+    }).join("");
   };
 
   var isToday = function(date) {
