@@ -1,6 +1,6 @@
-var tiq = (function() {
+var tic = (function() {
 
-  // tiq has some languages
+  // tic has some languages
   var langs = {
     "en-US": {
       "days"       : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
@@ -55,7 +55,7 @@ var tiq = (function() {
     }
   };
 
-  var dateFormatFunctions = {
+  var formatFunctions = {
     "YYYY": getExecuteOnParamFn("getFullYear"),
     "YY"  : _.compose(getConfiguredSubstrFn(2), getExecuteOnParamFn("getFullYear")),
     "MMMM": _.compose(getLanguageLookupFn("months"), getExecuteOnParamFn("getMonth")),
@@ -78,11 +78,11 @@ var tiq = (function() {
     "s"   : getExecuteOnParamFn("getSeconds")
   };
 
-  var dateFormatFunctionsRegex = new RegExp(_.keys(dateFormatFunctions).join("|"));
+  var formatFunctionsRegex = new RegExp(_.keys(formatFunctions).join("|"));
 
   var formatStrToArray = function(formatStr) {
-    if (dateFormatFunctionsRegex.test(formatStr)) {
-      var group = formatStr.match(dateFormatFunctionsRegex)[0],
+    if (formatFunctionsRegex.test(formatStr)) {
+      var group = formatStr.match(formatFunctionsRegex)[0],
           groupId = formatStr.indexOf(group),
           preGroup = groupId !== 0 ? formatStr.substr(0, groupId) : undefined,
           newFormatStr = formatStr.substr(groupId + group.length);
@@ -95,7 +95,7 @@ var tiq = (function() {
 
   var format = function(date, formatStr) {
     return _.map(formatStrToArray(formatStr), function(group) {
-      return dateFormatFunctions[group] !== undefined ? dateFormatFunctions[group](date) : group;
+      return formatFunctions[group] !== undefined ? formatFunctions[group](date) : group;
     }).join("");
   };
 
