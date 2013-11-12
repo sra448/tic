@@ -1,7 +1,5 @@
 (function() {
-  var tic;
-
-  tic = (function() {
+  window.tic = (function() {
     var add, currentLanguage, format, formatFunctions, formatFunctionsRegex, formatStrToArray, getAttribute, getConfiguredSubstrFn, getExecuteOnParamFn, getLanguageLookupFn, increment, isToday, langs, millisecondFactors, padNumber, parse, parseFormatRegex, parseFunctions, substr, substract;
     langs = {
       "en-US": {
@@ -143,7 +141,7 @@
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           g = _ref[_i];
-          _results.push(formatFunctions[group] != null ? formatFunctions[group](date) : group);
+          _results.push(formatFunctions[g] != null ? formatFunctions[g](date) : g);
         }
         return _results;
       })()).join("");

@@ -1,4 +1,4 @@
-tic = do ->
+window.tic = do ->
 
   # tic has some languages
   langs =
@@ -102,7 +102,7 @@ tic = do ->
       [formatStr]
 
   format = (date, formatStr) ->
-    ((if formatFunctions[group]? then formatFunctions[group](date) else group) for g in formatStrToArray formatStr).join ""
+    ((if formatFunctions[g]? then formatFunctions[g](date) else g) for g in formatStrToArray formatStr).join ""
 
   isToday = (date) ->
     (format date, "YYYYMD") == (format new Date(), "YYYYMD")

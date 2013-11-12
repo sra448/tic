@@ -15,7 +15,7 @@ module.exports = (grunt) ->
           spawn: false
     jasmine:
       std:
-        src: "src/**/*.js"
+        src: ["underscore-1.5.2.js", "tic.js"]
         options:
           specs: "*Spec.js"
           helpers: "*Helper.js"
