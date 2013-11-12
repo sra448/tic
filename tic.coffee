@@ -18,7 +18,7 @@ window.tic = do ->
 
   increment = (num) -> num + 1
 
-  padNumber = (num, targetLength) ->
+  padNumber = (num, targetLength = 2) ->
     if (num+"").length < targetLength then padNumber "0#{num}", targetLength else num+""
 
   getAttribute = (obj, attribute) -> obj[attribute]

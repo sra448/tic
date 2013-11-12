@@ -12,7 +12,7 @@ describe "tic.parse", ->
     (expect (tic.parse "12/24/2013 at 1335", "MM/DD/YYYY at HHmm")).toEqual (new Date "12.24.2013 13:35:00")
     (expect (tic.parse "24-12-2013 13-35", "DD-MM-YYYY HH-mm")).toEqual (new Date "12.24.2013 13:35:00")
 
-  it "returns a date object of the current date, given an empty string", ->
+  it "returns a date object of the current date, given an empty string or nothing", ->
     date = new Date()
     date.setHours(0)
     date.setMinutes(0)
@@ -57,10 +57,10 @@ describe "tic.isToday", ->
     (expect (tic.isToday date)).toEqual false
     (expect (tic.isToday new Date())).toEqual true
 
-describe "tic.add / tic.remove", ->
+# describe "tic.add / tic.remove", ->
 
-  date = new Date "1.1.2012 01:01:01"
+#   date = new Date "1.1.2012 01:01:01"
 
-  it "know how to add time to a date", ->
-    (expect (tic.format (tic.add date, 1, "days"), "DD")).toEqual "02"
+#   it "know how to add time to a date", ->
+#     (expect (tic.format (tic.add date, 1, "days"), "DD")).toEqual "02"
     # expect(tic.format(tic.add(date, 1, "year"), "YYYY")).toEqual("2013")

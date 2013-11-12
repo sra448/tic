@@ -22,6 +22,9 @@
       return num + 1;
     };
     padNumber = function(num, targetLength) {
+      if (targetLength == null) {
+        targetLength = 2;
+      }
       if ((num + "").length < targetLength) {
         return padNumber("0" + num, targetLength);
       } else {
