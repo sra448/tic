@@ -1,0 +1,20 @@
+{
+  "name": "tic",
+  "version": "0.5.0",
+  "description": "tic - the simple date library",
+  "main": "tic.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sra448/tic.git"
+  },
+  "author": "Florian Unternaehrer",
+  "bugs": {
+    "url": "https://github.com/sra448/tic/issues"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-coffee": "~0.7.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-jasmine": "~0.5.2"
+  }
+}
