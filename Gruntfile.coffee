@@ -9,7 +9,7 @@ module.exports = (grunt) ->
         ext: ".js"
     watch:
       scripts:
-        files: ["src/*.coffee"]
+        files: ["*.coffee"]
         tasks: ["coffee"]
         options:
           spawn: false
