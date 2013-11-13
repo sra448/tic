@@ -2,7 +2,7 @@
   var __slice = [].slice;
 
   window.tic = (function() {
-    var add, apply, clone, compose, curry, dotExec, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isToday, keys, lang, langs, millisecondFactors, padNumber, parse, parseFormatRegex, parseFunctions, resetTime, substr, substract;
+    var add, apply, clone, compose, curry, dotExec, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isToday, keys, lang, langs, millisecondFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, resetTime, substr;
     langs = {
       "en-US": {
         "stdDateFormat": "MM.DD.YYYY",
@@ -137,6 +137,18 @@
       },
       "m": function(date, val) {
         return new Date(date.setMinutes(val));
+      },
+      "SS": function(date, val) {
+        return new Date(date.setSeconds(val));
+      },
+      "S": function(date, val) {
+        return new Date(date.setSeconds(val));
+      },
+      "ss": function(date, val) {
+        return new Date(date.setSeconds(val));
+      },
+      "s": function(date, val) {
+        return new Date(date.setSeconds(val));
       }
     };
     parseFormatRegex = new RegExp((keys(parseFunctions)).join("|"), "g");
@@ -234,19 +246,24 @@
       return (format(date, "YYYYMD")) === (format(new Date(), "YYYYMD"));
     };
     millisecondFactors = {
-      "millisecond": 1,
-      "second": 1e3,
-      "minute": 6e4,
-      "hour": 36e5,
-      "day": 864e5,
-      "week": 6048e5,
-      "month": 2592e6,
-      "year": 31536e6
+      "milliseconds": 1,
+      "seconds": 1e3,
+      "minutes": 6e4,
+      "hours": 36e5,
+      "days": 864e5,
+      "weeks": 6048e5,
+      "months": 2592e6,
+      "years": 31536e6
     };
     add = function(date, val, unit) {
-      return new Date(date.getTime() + (val * (unit && millisecondFactors[unit.toLowerCase()] || 1e3)));
+      var factor;
+      if (unit == null) {
+        unit = "second";
+      }
+      factor = millisecondFactors[unit] || millisecondFactors[unit + "s"] || 1e3;
+      return new Date(date.getTime() + (val * factor));
     };
-    substract = function(date, val, unit) {
+    remove = function(date, val, unit) {
       return add(date, -val, unit);
     };
     return {
@@ -254,7 +271,7 @@
       parse: parse,
       format: format,
       add: add,
-      substract: substract,
+      remove: remove,
       isToday: isToday
     };
   })();

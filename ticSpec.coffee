@@ -1,8 +1,9 @@
 date = new Date "2.3.2012 01:03:02"
 
-describe "tic.resetTime", ->
 
-  it "takes any date, returns it with no time (00:00:000)", ->
+describe "tic.resetTime(date, time*)", ->
+
+  it "defaults to 00:00", ->
     (expect (tic.resetTime date)).toEqual (new Date "2.3.2012 00:00:00")
 
   it "takes any date, returns it with the provided time (hours:minutes:seconds)", ->
@@ -11,7 +12,7 @@ describe "tic.resetTime", ->
     (expect (tic.resetTime date, "10:23:44")).toEqual (new Date "2.3.2012 10:23:44")
     (expect (tic.resetTime date, "13:23:44")).toEqual (new Date "2.3.2012 13:23:44")
 
-describe "tic.format", ->
+describe "tic.format(date, format*)", ->
 
   it "knows how to format YYYY", -> (expect (tic.format date, "YYYY")).toEqual "2012"
   it "knows how to format YY",   -> (expect (tic.format date, "YY"  )).toEqual "12"
@@ -34,10 +35,11 @@ describe "tic.format", ->
   it "knows how to format ss",   -> (expect (tic.format date, "ss"  )).toEqual "02"
   it "knows how to format s",    -> (expect (tic.format date, "s"   )).toEqual "2"
 
-describe "tic.parse", ->
+describe "tic.parse(string, format*)", ->
 
   it "works like a reverse format and takes a formatStr as an optional parameter", ->
 
+    (expect (tic.parse "12.24.2013")).toEqual (new Date "12.24.2013 00:00:00")
     (expect (tic.parse "24122013", "DDMMYYYY")).toEqual (new Date "12.24.2013 00:00:00")
     (expect (tic.parse "24.12.2013", "DD.MM.YYYY")).toEqual (new Date "12.24.2013 00:00:00")
     (expect (tic.parse "12/24/2013", "MM/DD/YYYY")).toEqual (new Date "12.24.2013 00:00:00")
@@ -51,20 +53,58 @@ describe "tic.parse", ->
   it "returns a date object of the current date, given an empty string or nothing", ->
     (expect (tic.parse "")).toEqual new Date()
 
-  # it("returns a date object, given a date string", function() {
-  #   expect(tic.parse("Thu Jun 06 2013 19:40:02 GMT+0200 (CEST)")).toEqual(new Date("Thu Jun 06 2013 19:40:02 GMT+0200 (CEST)"))
-  # })
-
-describe "tic.isToday", ->
+describe "tic.isToday(date)", ->
 
   it "knows if it is today", ->
     (expect (tic.isToday date)).toEqual false
     (expect (tic.isToday new Date())).toEqual true
 
-# describe "tic.add / tic.remove", ->
+describe "tic.add(date, amount, unit*)", ->
 
-#   date = new Date "1.1.2012 01:01:01"
+  it "defaults to seconds", ->
+    (expect (tic.add date, 1)).toEqual (new Date "2.3.2012 01:03:03")
 
-#   it "know how to add time to a date", ->
-#     (expect (tic.format (tic.add date, 1, "days"), "DD")).toEqual "02"
-    # expect(tic.format(tic.add(date, 1, "year"), "YYYY")).toEqual("2013")
+  it "knows how to add seconds to a date", ->
+    (expect (tic.add date, 1, "second" )).toEqual (new Date "2.3.2012 01:03:03")
+    (expect (tic.add date, 1, "seconds")).toEqual (new Date "2.3.2012 01:03:03")
+
+  it "knows how to add minutes to a date", ->
+    (expect (tic.add date, 1, "minute" )).toEqual (new Date "2.3.2012 01:04:02")
+    (expect (tic.add date, 1, "minutes")).toEqual (new Date "2.3.2012 01:04:02")
+
+  it "knows how to add hours to a date", ->
+    (expect (tic.add date, 1, "hour" )).toEqual (new Date "2.3.2012 02:03:02")
+    (expect (tic.add date, 1, "hours")).toEqual (new Date "2.3.2012 02:03:02")
+
+  it "knows how to add days to a date", ->
+    (expect (tic.add date, 1, "day" )).toEqual (new Date "2.4.2012 01:03:02")
+    (expect (tic.add date, 1, "days")).toEqual (new Date "2.4.2012 01:03:02")
+
+  it "knows how to add weeks to a date", ->
+    (expect (tic.add date, 1, "week" )).toEqual (new Date "2.10.2012 01:03:02")
+    (expect (tic.add date, 1, "weeks")).toEqual (new Date "2.10.2012 01:03:02")
+
+describe "tic.remove(date, amount, unit*)", ->
+
+  it "defaults to seconds", ->
+    (expect (tic.remove date, 1)).toEqual (new Date "2.3.2012 01:03:01")
+
+  it "knows how to remove seconds from a date", ->
+    (expect (tic.remove date, 1, "second" )).toEqual (new Date "2.3.2012 01:03:01")
+    (expect (tic.remove date, 1, "seconds")).toEqual (new Date "2.3.2012 01:03:01")
+
+  it "knows how to remove minutes from a date", ->
+    (expect (tic.remove date, 1, "minute" )).toEqual (new Date "2.3.2012 01:02:02")
+    (expect (tic.remove date, 1, "minutes")).toEqual (new Date "2.3.2012 01:02:02")
+
+  it "knows how to remove hours from a date", ->
+    (expect (tic.remove date, 1, "hour" )).toEqual (new Date "2.3.2012 00:03:02")
+    (expect (tic.remove date, 1, "hours")).toEqual (new Date "2.3.2012 00:03:02")
+
+  it "knows how to remove days from a date", ->
+    (expect (tic.remove date, 1, "day" )).toEqual (new Date "2.2.2012 01:03:02")
+    (expect (tic.remove date, 1, "days")).toEqual (new Date "2.2.2012 01:03:02")
+
+  it "knows how to remove weeks from a date", ->
+    (expect (tic.remove date, 1, "week" )).toEqual (new Date "1.27.2012 01:03:02")
+    (expect (tic.remove date, 1, "weeks")).toEqual (new Date "1.27.2012 01:03:02")

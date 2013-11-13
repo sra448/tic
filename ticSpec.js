@@ -3,8 +3,8 @@
 
   date = new Date("2.3.2012 01:03:02");
 
-  describe("tic.resetTime", function() {
-    it("takes any date, returns it with no time (00:00:000)", function() {
+  describe("tic.resetTime(date, time*)", function() {
+    it("defaults to 00:00", function() {
       return (expect(tic.resetTime(date))).toEqual(new Date("2.3.2012 00:00:00"));
     });
     return it("takes any date, returns it with the provided time (hours:minutes:seconds)", function() {
@@ -15,7 +15,7 @@
     });
   });
 
-  describe("tic.format", function() {
+  describe("tic.format(date, format*)", function() {
     it("knows how to format YYYY", function() {
       return (expect(tic.format(date, "YYYY"))).toEqual("2012");
     });
@@ -78,8 +78,9 @@
     });
   });
 
-  describe("tic.parse", function() {
+  describe("tic.parse(string, format*)", function() {
     it("works like a reverse format and takes a formatStr as an optional parameter", function() {
+      (expect(tic.parse("12.24.2013"))).toEqual(new Date("12.24.2013 00:00:00"));
       (expect(tic.parse("24122013", "DDMMYYYY"))).toEqual(new Date("12.24.2013 00:00:00"));
       (expect(tic.parse("24.12.2013", "DD.MM.YYYY"))).toEqual(new Date("12.24.2013 00:00:00"));
       (expect(tic.parse("12/24/2013", "MM/DD/YYYY"))).toEqual(new Date("12.24.2013 00:00:00"));
@@ -94,10 +95,62 @@
     });
   });
 
-  describe("tic.isToday", function() {
+  describe("tic.isToday(date)", function() {
     return it("knows if it is today", function() {
       (expect(tic.isToday(date))).toEqual(false);
       return (expect(tic.isToday(new Date()))).toEqual(true);
+    });
+  });
+
+  describe("tic.add(date, amount, unit*)", function() {
+    it("defaults to seconds", function() {
+      return (expect(tic.add(date, 1))).toEqual(new Date("2.3.2012 01:03:03"));
+    });
+    it("knows how to add seconds to a date", function() {
+      (expect(tic.add(date, 1, "second"))).toEqual(new Date("2.3.2012 01:03:03"));
+      return (expect(tic.add(date, 1, "seconds"))).toEqual(new Date("2.3.2012 01:03:03"));
+    });
+    it("knows how to add minutes to a date", function() {
+      (expect(tic.add(date, 1, "minute"))).toEqual(new Date("2.3.2012 01:04:02"));
+      return (expect(tic.add(date, 1, "minutes"))).toEqual(new Date("2.3.2012 01:04:02"));
+    });
+    it("knows how to add hours to a date", function() {
+      (expect(tic.add(date, 1, "hour"))).toEqual(new Date("2.3.2012 02:03:02"));
+      return (expect(tic.add(date, 1, "hours"))).toEqual(new Date("2.3.2012 02:03:02"));
+    });
+    it("knows how to add days to a date", function() {
+      (expect(tic.add(date, 1, "day"))).toEqual(new Date("2.4.2012 01:03:02"));
+      return (expect(tic.add(date, 1, "days"))).toEqual(new Date("2.4.2012 01:03:02"));
+    });
+    return it("knows how to add weeks to a date", function() {
+      (expect(tic.add(date, 1, "week"))).toEqual(new Date("2.10.2012 01:03:02"));
+      return (expect(tic.add(date, 1, "weeks"))).toEqual(new Date("2.10.2012 01:03:02"));
+    });
+  });
+
+  describe("tic.remove(date, amount, unit*)", function() {
+    it("defaults to seconds", function() {
+      return (expect(tic.remove(date, 1))).toEqual(new Date("2.3.2012 01:03:01"));
+    });
+    it("knows how to remove seconds from a date", function() {
+      (expect(tic.remove(date, 1, "second"))).toEqual(new Date("2.3.2012 01:03:01"));
+      return (expect(tic.remove(date, 1, "seconds"))).toEqual(new Date("2.3.2012 01:03:01"));
+    });
+    it("knows how to remove minutes from a date", function() {
+      (expect(tic.remove(date, 1, "minute"))).toEqual(new Date("2.3.2012 01:02:02"));
+      return (expect(tic.remove(date, 1, "minutes"))).toEqual(new Date("2.3.2012 01:02:02"));
+    });
+    it("knows how to remove hours from a date", function() {
+      (expect(tic.remove(date, 1, "hour"))).toEqual(new Date("2.3.2012 00:03:02"));
+      return (expect(tic.remove(date, 1, "hours"))).toEqual(new Date("2.3.2012 00:03:02"));
+    });
+    it("knows how to remove days from a date", function() {
+      (expect(tic.remove(date, 1, "day"))).toEqual(new Date("2.2.2012 01:03:02"));
+      return (expect(tic.remove(date, 1, "days"))).toEqual(new Date("2.2.2012 01:03:02"));
+    });
+    return it("knows how to remove weeks from a date", function() {
+      (expect(tic.remove(date, 1, "week"))).toEqual(new Date("1.27.2012 01:03:02"));
+      return (expect(tic.remove(date, 1, "weeks"))).toEqual(new Date("1.27.2012 01:03:02"));
     });
   });
 

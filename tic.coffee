@@ -73,6 +73,10 @@ window.tic = do ->
     "H"   : (date, val) -> new Date (date.setHours val)
     "mm"  : (date, val) -> new Date (date.setMinutes val)
     "m"   : (date, val) -> new Date (date.setMinutes val)
+    "SS"  : (date, val) -> new Date (date.setSeconds val)
+    "S"   : (date, val) -> new Date (date.setSeconds val)
+    "ss"  : (date, val) -> new Date (date.setSeconds val)
+    "s"   : (date, val) -> new Date (date.setSeconds val)
 
   parseFormatRegex = new RegExp ((keys parseFunctions).join "|"), "g"
 
@@ -140,26 +144,26 @@ window.tic = do ->
     (format date, "YYYYMD") == (format new Date(), "YYYYMD")
 
   millisecondFactors =
-    "millisecond": 1
-    "second"     : 1e3
-    "minute"     : 6e4
-    "hour"       : 36e5
-    "day"        : 864e5
-    "week"       : 6048e5
-    "month"      : 2592e6
-    "year"       : 31536e6
+    "milliseconds": 1
+    "seconds"     : 1e3
+    "minutes"     : 6e4
+    "hours"       : 36e5
+    "days"        : 864e5
+    "weeks"       : 6048e5
+    "months"      : 2592e6
+    "years"       : 31536e6
 
-  add = (date, val, unit) ->
-    # std unit is seconds
-    new Date(date.getTime() + (val * (unit && millisecondFactors[unit.toLowerCase()] || 1e3)))
+  add = (date, val, unit = "second") ->
+    factor = millisecondFactors[unit] || millisecondFactors[unit+"s"] || 1e3
+    new Date date.getTime() + (val * factor)
 
-  substract = (date, val, unit) -> add date, -val, unit
+  remove = (date, val, unit) -> add date, -val, unit
 
   return {
     resetTime: resetTime
     parse: parse
     format: format
     add: add
-    substract: substract
+    remove: remove
     isToday: isToday
   }
