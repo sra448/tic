@@ -1,4 +1,83 @@
 (function() {
+  var date;
+
+  date = new Date("2.3.2012 01:03:02");
+
+  describe("tic.resetTime", function() {
+    it("takes any date, returns it with no time (00:00:000)", function() {
+      return (expect(tic.resetTime(date))).toEqual(new Date("2.3.2012 00:00:00"));
+    });
+    return it("takes any date, returns it with the provided time (hours:minutes:seconds)", function() {
+      (expect(tic.resetTime(date, "10"))).toEqual(new Date("2.3.2012 10:"));
+      (expect(tic.resetTime(date, "10:23"))).toEqual(new Date("2.3.2012 10:23:00"));
+      (expect(tic.resetTime(date, "10:23:44"))).toEqual(new Date("2.3.2012 10:23:44"));
+      return (expect(tic.resetTime(date, "13:23:44"))).toEqual(new Date("2.3.2012 13:23:44"));
+    });
+  });
+
+  describe("tic.format", function() {
+    it("knows how to format YYYY", function() {
+      return (expect(tic.format(date, "YYYY"))).toEqual("2012");
+    });
+    it("knows how to format YY", function() {
+      return (expect(tic.format(date, "YY"))).toEqual("12");
+    });
+    it("knows how to format MMMM", function() {
+      return (expect(tic.format(date, "MMMM"))).toEqual("February");
+    });
+    it("knows how to format MMM", function() {
+      return (expect(tic.format(date, "MMM"))).toEqual("Feb");
+    });
+    it("knows how to format MM", function() {
+      return (expect(tic.format(date, "MM"))).toEqual("02");
+    });
+    it("knows how to format M", function() {
+      return (expect(tic.format(date, "M"))).toEqual("2");
+    });
+    it("knows how to format DD", function() {
+      return (expect(tic.format(date, "DD"))).toEqual("03");
+    });
+    it("knows how to format D", function() {
+      return (expect(tic.format(date, "D"))).toEqual("3");
+    });
+    it("knows how to format dddd", function() {
+      return (expect(tic.format(date, "dddd"))).toEqual("Friday");
+    });
+    it("knows how to format ddd", function() {
+      return (expect(tic.format(date, "ddd"))).toEqual("Fri");
+    });
+    it("knows how to format dd", function() {
+      return (expect(tic.format(date, "dd"))).toEqual("Fr");
+    });
+    it("knows how to format d", function() {
+      return (expect(tic.format(date, "d"))).toEqual("5");
+    });
+    it("knows how to format HH", function() {
+      return (expect(tic.format(date, "HH"))).toEqual("01");
+    });
+    it("knows how to format H", function() {
+      return (expect(tic.format(date, "H"))).toEqual("1");
+    });
+    it("knows how to format mm", function() {
+      return (expect(tic.format(date, "mm"))).toEqual("03");
+    });
+    it("knows how to format m", function() {
+      return (expect(tic.format(date, "m"))).toEqual("3");
+    });
+    it("knows how to format SS", function() {
+      return (expect(tic.format(date, "SS"))).toEqual("02");
+    });
+    it("knows how to format S", function() {
+      return (expect(tic.format(date, "S"))).toEqual("2");
+    });
+    it("knows how to format ss", function() {
+      return (expect(tic.format(date, "ss"))).toEqual("02");
+    });
+    return it("knows how to format s", function() {
+      return (expect(tic.format(date, "s"))).toEqual("2");
+    });
+  });
+
   describe("tic.parse", function() {
     it("works like a reverse format and takes a formatStr as an optional parameter", function() {
       (expect(tic.parse("24122013", "DDMMYYYY"))).toEqual(new Date("12.24.2013 00:00:00"));
@@ -11,84 +90,11 @@
       return (expect(tic.parse("24-12-2013 13-35", "DD-MM-YYYY HH-mm"))).toEqual(new Date("12.24.2013 13:35:00"));
     });
     return it("returns a date object of the current date, given an empty string or nothing", function() {
-      var date;
-      date = new Date();
-      date.setHours(0);
-      date.setMinutes(0);
-      date.setSeconds(0);
-      date.setMilliseconds(0);
-      return (expect(tic.parse(""))).toEqual(date);
-    });
-  });
-
-  describe("tic.format", function() {
-    var date;
-    date = new Date("2.3.2012 01:03:02");
-    it("handles YYYY", function() {
-      return (expect(tic.format(date, "YYYY"))).toEqual("2012");
-    });
-    it("handles YY", function() {
-      return (expect(tic.format(date, "YY"))).toEqual("12");
-    });
-    it("handles MMMM", function() {
-      return (expect(tic.format(date, "MMMM"))).toEqual("February");
-    });
-    it("handles MMM", function() {
-      return (expect(tic.format(date, "MMM"))).toEqual("Feb");
-    });
-    it("handles MM", function() {
-      return (expect(tic.format(date, "MM"))).toEqual("02");
-    });
-    it("handles M", function() {
-      return (expect(tic.format(date, "M"))).toEqual("2");
-    });
-    it("handles DD", function() {
-      return (expect(tic.format(date, "DD"))).toEqual("03");
-    });
-    it("handles D", function() {
-      return (expect(tic.format(date, "D"))).toEqual("3");
-    });
-    it("handles dddd", function() {
-      return (expect(tic.format(date, "dddd"))).toEqual("Friday");
-    });
-    it("handles ddd", function() {
-      return (expect(tic.format(date, "ddd"))).toEqual("Fri");
-    });
-    it("handles dd", function() {
-      return (expect(tic.format(date, "dd"))).toEqual("Fr");
-    });
-    it("handles d", function() {
-      return (expect(tic.format(date, "d"))).toEqual("5");
-    });
-    it("handles HH", function() {
-      return (expect(tic.format(date, "HH"))).toEqual("01");
-    });
-    it("handles H", function() {
-      return (expect(tic.format(date, "H"))).toEqual("1");
-    });
-    it("handles mm", function() {
-      return (expect(tic.format(date, "mm"))).toEqual("03");
-    });
-    it("handles m", function() {
-      return (expect(tic.format(date, "m"))).toEqual("3");
-    });
-    it("handles SS", function() {
-      return (expect(tic.format(date, "SS"))).toEqual("02");
-    });
-    it("handles S", function() {
-      return (expect(tic.format(date, "S"))).toEqual("2");
-    });
-    it("handles ss", function() {
-      return (expect(tic.format(date, "ss"))).toEqual("02");
-    });
-    return it("handles s", function() {
-      return (expect(tic.format(date, "s"))).toEqual("2");
+      return (expect(tic.parse(""))).toEqual(new Date());
     });
   });
 
   describe("tic.isToday", function() {
-    var date;
-    date = new Date("2.3.2012 01:03:02");
     return it("knows if it is today", function() {
       (expect(tic.isToday(date))).toEqual(false);
       return (expect(tic.isToday(new Date()))).toEqual(true);
