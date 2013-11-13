@@ -1,6 +1,5 @@
 date = new Date "2.3.2012 01:03:02"
 
-
 describe "tic.resetTime(date, time*)", ->
 
   it "defaults to 00:00", ->
@@ -14,6 +13,7 @@ describe "tic.resetTime(date, time*)", ->
 
 describe "tic.format(date, format*)", ->
 
+  it "defaults to MM/DD/YYYY",   -> (expect (tic.format date)).toEqual "02/03/2012"
   it "knows how to format YYYY", -> (expect (tic.format date, "YYYY")).toEqual "2012"
   it "knows how to format YY",   -> (expect (tic.format date, "YY"  )).toEqual "12"
   it "knows how to format MMMM", -> (expect (tic.format date, "MMMM")).toEqual "February"
@@ -37,6 +37,30 @@ describe "tic.format(date, format*)", ->
 
 describe "tic.parse(string, format*)", ->
 
+  it "undefined parses to now", -> (expect (tic.parse())).toEqual (new Date)
+  it "an empty string parses now", -> (expect (tic.parse(""))).toEqual (new Date)
+
+  # it "knows how to parse YYYY", -> (expect (tic.parse "2012", "YYYY")).toEqual
+  # it "knows how to parse YY",   -> (expect (tic.parse "12", "YY"  )).toEqual
+  # # it "knows how to parse MMMM", -> (expect (tic.parse "February", "MMMM")).toEqual
+  # # it "knows how to parse MMM",  -> (expect (tic.parse "Feb", "MMM" )).toEqual
+  # it "knows how to parse MM",   -> (expect (tic.parse "02", "MM"  )).toEqual
+  # it "knows how to parse M",    -> (expect (tic.parse "2", "M"   )).toEqual
+  # it "knows how to parse DD",   -> (expect (tic.parse "03", "DD"  )).toEqual
+  # it "knows how to parse D",    -> (expect (tic.parse "3", "D"   )).toEqual
+  # # it "knows how to parse dddd", -> (expect (tic.parse "Friday", "dddd")).toEqual
+  # # it "knows how to parse ddd",  -> (expect (tic.parse "Fri", "ddd" )).toEqual
+  # # it "knows how to parse dd",   -> (expect (tic.parse "Fr", "dd"  )).toEqual
+  # it "knows how to parse d",    -> (expect (tic.parse "5", "d"   )).toEqual
+  # it "knows how to parse HH",   -> (expect (tic.parse "01", "HH"  )).toEqual
+  # it "knows how to parse H",    -> (expect (tic.parse "1", "H"   )).toEqual
+  # it "knows how to parse mm",   -> (expect (tic.parse "03", "mm"  )).toEqual
+  # it "knows how to parse m",    -> (expect (tic.parse "3", "m"   )).toEqual
+  # it "knows how to parse SS",   -> (expect (tic.parse "02", "SS"  )).toEqual
+  # it "knows how to parse S",    -> (expect (tic.parse "2", "S"   )).toEqual
+  # it "knows how to parse ss",   -> (expect (tic.parse "02", "ss"  )).toEqual
+  # it "knows how to parse s",    -> (expect (tic.parse "2", "s"   )).toEqual
+
   it "works like a reverse format and takes a formatStr as an optional parameter", ->
 
     (expect (tic.parse "12.24.2013")).toEqual (new Date "12.24.2013 00:00:00")
@@ -55,9 +79,8 @@ describe "tic.parse(string, format*)", ->
 
 describe "tic.isToday(date)", ->
 
-  it "knows if it is today", ->
-    (expect (tic.isToday date)).toEqual false
-    (expect (tic.isToday new Date())).toEqual true
+  it "knows wheater it is today", -> (expect (tic.isToday date)).toEqual false
+  it "or not", -> (expect (tic.isToday new Date())).toEqual true
 
 describe "tic.add(date, amount, unit*)", ->
 

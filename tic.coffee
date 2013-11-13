@@ -3,7 +3,7 @@ window.tic = do ->
   # tic has some languages
   langs =
     "en-US":
-      "stdDateFormat": "MM.DD.YYYY",
+      "stdDateFormat": "MM/DD/YYYY",
       "days"         : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
       "months"       : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
       "monthsShort"  : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -47,7 +47,6 @@ window.tic = do ->
   getLanguageLookupFn = (key) -> curry getAttribute, lang[key]
 
   dotExec = (p) -> (obj) -> obj[p]()
-
 
   # more tic specific stuff
 

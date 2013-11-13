@@ -16,6 +16,9 @@
   });
 
   describe("tic.format(date, format*)", function() {
+    it("defaults to MM/DD/YYYY", function() {
+      return (expect(tic.format(date))).toEqual("02/03/2012");
+    });
     it("knows how to format YYYY", function() {
       return (expect(tic.format(date, "YYYY"))).toEqual("2012");
     });
@@ -79,6 +82,12 @@
   });
 
   describe("tic.parse(string, format*)", function() {
+    it("undefined parses to now", function() {
+      return (expect(tic.parse())).toEqual(new Date);
+    });
+    it("an empty string parses now", function() {
+      return (expect(tic.parse(""))).toEqual(new Date);
+    });
     it("works like a reverse format and takes a formatStr as an optional parameter", function() {
       (expect(tic.parse("12.24.2013"))).toEqual(new Date("12.24.2013 00:00:00"));
       (expect(tic.parse("24122013", "DDMMYYYY"))).toEqual(new Date("12.24.2013 00:00:00"));
@@ -96,8 +105,10 @@
   });
 
   describe("tic.isToday(date)", function() {
-    return it("knows if it is today", function() {
-      (expect(tic.isToday(date))).toEqual(false);
+    it("knows wheater it is today", function() {
+      return (expect(tic.isToday(date))).toEqual(false);
+    });
+    return it("or not", function() {
       return (expect(tic.isToday(new Date()))).toEqual(true);
     });
   });
