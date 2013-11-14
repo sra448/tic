@@ -113,6 +113,34 @@
     });
   });
 
+  describe("tic.isLeapYear(date)", function() {
+    it("every 4th year is a leapyear", function() {
+      (expect(tic.isLeapYear(2001))).toEqual(false);
+      (expect(tic.isLeapYear(2002))).toEqual(false);
+      (expect(tic.isLeapYear(2003))).toEqual(false);
+      return (expect(tic.isLeapYear(2004))).toEqual(true);
+    });
+    it("but then every 100th isn't", function() {
+      (expect(tic.isLeapYear(2096))).toEqual(true);
+      (expect(tic.isLeapYear(2100))).toEqual(false);
+      return (expect(tic.isLeapYear(2104))).toEqual(true);
+    });
+    it("and lastly every 400th is one", function() {
+      (expect(tic.isLeapYear(1900))).toEqual(false);
+      (expect(tic.isLeapYear(2000))).toEqual(true);
+      return (expect(tic.isLeapYear(2100))).toEqual(false);
+    });
+    it("takes dates as input", function() {
+      return (expect(tic.isLeapYear(new Date("2.3.2000 01:03:02")))).toEqual(true);
+    });
+    it("takes strings as input", function() {
+      return (expect(tic.isLeapYear("2000"))).toEqual(true);
+    });
+    return it("takes integers as input", function() {
+      return (expect(tic.isLeapYear(2000))).toEqual(true);
+    });
+  });
+
   describe("tic.add(date, amount, unit*)", function() {
     it("defaults to seconds", function() {
       return (expect(tic.add(date, 1))).toEqual(new Date("2.3.2012 01:03:03"));

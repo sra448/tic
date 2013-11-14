@@ -33,6 +33,8 @@ window.tic = do ->
 
   keys = (obj) -> (k for k, v of obj)
 
+  add = (a, b) -> a + b
+
   substr = (str, id, i) -> ("" + str).substr id, i
 
   getConfiguredSubstrFn = (id, i) -> (str) -> substr str, id, i
@@ -143,6 +145,15 @@ window.tic = do ->
   isToday = (date) ->
     (format date, "YYYYMD") == (format new Date(), "YYYYMD")
 
+  leapYearsBetween = (d1, d2) ->
+    d1 = if d1.getFullYear? then d1.getFullYear else +d1
+    d2 = if d2.getFullYear? then d2.getFullYear else +d2
+    foldl add, 0, (if isLeapYear y then 1 else 0 for y in [d1..d2])
+
+  isLeapYear = (d) ->
+    y = if d.getFullYear? then d.getFullYear?() else +d
+    y % 400 == 0 || (y % 4 == 0 && y % 100 != 0)
+
   millisecondFactors =
     "milliseconds": 1
     "seconds"     : 1e3
@@ -166,4 +177,5 @@ window.tic = do ->
     add: add
     remove: remove
     isToday: isToday
+    isLeapYear: isLeapYear
   }

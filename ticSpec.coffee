@@ -82,6 +82,28 @@ describe "tic.isToday(date)", ->
   it "knows wheater it is today", -> (expect (tic.isToday date)).toEqual false
   it "or not", -> (expect (tic.isToday new Date())).toEqual true
 
+describe "tic.isLeapYear(date)", ->
+
+  it "every 4th year is a leapyear", ->
+    (expect (tic.isLeapYear 2001)).toEqual false
+    (expect (tic.isLeapYear 2002)).toEqual false
+    (expect (tic.isLeapYear 2003)).toEqual false
+    (expect (tic.isLeapYear 2004)).toEqual true
+
+  it "but then every 100th isn't", ->
+    (expect (tic.isLeapYear 2096)).toEqual true
+    (expect (tic.isLeapYear 2100)).toEqual false
+    (expect (tic.isLeapYear 2104)).toEqual true
+
+  it "and lastly every 400th is one", ->
+    (expect (tic.isLeapYear 1900)).toEqual false
+    (expect (tic.isLeapYear 2000)).toEqual true
+    (expect (tic.isLeapYear 2100)).toEqual false
+
+  it "takes dates as input", -> (expect (tic.isLeapYear new Date "2.3.2000 01:03:02")).toEqual true
+  it "takes strings as input", -> (expect (tic.isLeapYear "2000")).toEqual true
+  it "takes integers as input", -> (expect (tic.isLeapYear 2000)).toEqual true
+
 describe "tic.add(date, amount, unit*)", ->
 
   it "defaults to seconds", ->

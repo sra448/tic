@@ -2,7 +2,7 @@
   var __slice = [].slice;
 
   window.tic = (function() {
-    var add, apply, clone, compose, curry, dotExec, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isToday, keys, lang, langs, millisecondFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, resetTime, substr;
+    var add, apply, clone, compose, curry, dotExec, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isLeapYear, isToday, keys, lang, langs, leapYearsBetween, millisecondFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, resetTime, substr;
     langs = {
       "en-US": {
         "stdDateFormat": "MM/DD/YYYY",
@@ -58,6 +58,9 @@
         _results.push(k);
       }
       return _results;
+    };
+    add = function(a, b) {
+      return a + b;
     };
     substr = function(str, id, i) {
       return ("" + str).substr(id, i);
@@ -245,6 +248,28 @@
     isToday = function(date) {
       return (format(date, "YYYYMD")) === (format(new Date(), "YYYYMD"));
     };
+    leapYearsBetween = function(d1, d2) {
+      var y;
+      d1 = d1.getFullYear != null ? d1.getFullYear : +d1;
+      d2 = d2.getFullYear != null ? d2.getFullYear : +d2;
+      return foldl(add, 0, ((function() {
+        var _i, _results;
+        if (isLeapYear(y)) {
+          return 1;
+        } else {
+          _results = [];
+          for (y = _i = d1; d1 <= d2 ? _i <= d2 : _i >= d2; y = d1 <= d2 ? ++_i : --_i) {
+            _results.push(0);
+          }
+          return _results;
+        }
+      })()));
+    };
+    isLeapYear = function(d) {
+      var y;
+      y = d.getFullYear != null ? typeof d.getFullYear === "function" ? d.getFullYear() : void 0 : +d;
+      return y % 400 === 0 || (y % 4 === 0 && y % 100 !== 0);
+    };
     millisecondFactors = {
       "milliseconds": 1,
       "seconds": 1e3,
@@ -272,7 +297,8 @@
       format: format,
       add: add,
       remove: remove,
-      isToday: isToday
+      isToday: isToday,
+      isLeapYear: isLeapYear
     };
   })();
 
