@@ -3,14 +3,13 @@ window.tic = do ->
   # tic has some languages
   langs =
     "en-US":
-      "stdDateFormat": "MM/DD/YYYY",
-      "days"         : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-      "months"       : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-      "monthsShort"  : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+      stdDateFormat: "MM/DD/YYYY",
+      days         : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+      months       : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+      monthsShort  : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
   # change this, if your default language is something else
   lang = langs["en-US"]
-
 
   # internal functions
 
@@ -32,8 +31,6 @@ window.tic = do ->
   # last = (xs) -> xs[xs.length-1] if xs?
 
   keys = (obj) -> (k for k, v of obj)
-
-  add = (a, b) -> a + b
 
   substr = (str, id, i) -> ("" + str).substr id, i
 
@@ -145,13 +142,18 @@ window.tic = do ->
   isToday = (date) ->
     (format date, "YYYYMD") == (format new Date(), "YYYYMD")
 
+  isBeforeMarch1 = (d) -> d.getMonth() < 4 if d.getMonth?
+
   leapYearsBetween = (d1, d2) ->
-    d1 = if d1.getFullYear? then d1.getFullYear else +d1
-    d2 = if d2.getFullYear? then d2.getFullYear else +d2
-    foldl add, 0, (if isLeapYear y then 1 else 0 for y in [d1..d2])
+    [d1, d2] = [d2, d1] if d1 > d2
+    y1 = if d1.getFullYear? then d1.getFullYear() else +d1
+    y2 = if d2.getFullYear? then d2.getFullYear() else +d2
+    y1 = y1 + 1 unless isBeforeMarch1 d1
+    y2 = y2 - 1 if isBeforeMarch1 d2
+    foldl ((a, b) -> a + b), 0, ((if isLeapYear y then 1 else 0) for y in [y1..y2])
 
   isLeapYear = (d) ->
-    y = if d.getFullYear? then d.getFullYear?() else +d
+    y = if d.getFullYear? then d.getFullYear() else +d
     y % 400 == 0 || (y % 4 == 0 && y % 100 != 0)
 
   millisecondFactors =
@@ -165,8 +167,17 @@ window.tic = do ->
     "years"       : 31536e6
 
   add = (date, val, unit = "second") ->
-    factor = millisecondFactors[unit] || millisecondFactors[unit+"s"] || 1e3
-    new Date date.getTime() + (val * factor)
+    switch unit
+      when "year", "years"
+        d = new Date date.getTime() + (val * millisecondFactors.years)
+        console.log date.getFullYear(), d.getFullYear(), (leapYearsBetween date, d)
+        add d, (leapYearsBetween date, d), "days"
+      when "month", "months"
+        factor = millisecondFactors[unit] || millisecondFactors[unit+"s"] || 1e3
+        new Date date.getTime() + (val * factor)
+      else
+        factor = millisecondFactors[unit] || millisecondFactors[unit+"s"] || 1e3
+        new Date date.getTime() + (val * factor)
 
   remove = (date, val, unit) -> add date, -val, unit
 

@@ -2,13 +2,13 @@
   var __slice = [].slice;
 
   window.tic = (function() {
-    var add, apply, clone, compose, curry, dotExec, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isLeapYear, isToday, keys, lang, langs, leapYearsBetween, millisecondFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, resetTime, substr;
+    var add, apply, clone, compose, curry, dotExec, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isLeapYear, isToday, keys, lang, langs, leapYearsBetween, millisecondFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, resetTime, substr;
     langs = {
       "en-US": {
-        "stdDateFormat": "MM/DD/YYYY",
-        "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-        "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-        "monthsShort": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        stdDateFormat: "MM/DD/YYYY",
+        days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
       }
     };
     lang = langs["en-US"];
@@ -58,9 +58,6 @@
         _results.push(k);
       }
       return _results;
-    };
-    add = function(a, b) {
-      return a + b;
     };
     substr = function(str, id, i) {
       return ("" + str).substr(id, i);
@@ -248,26 +245,38 @@
     isToday = function(date) {
       return (format(date, "YYYYMD")) === (format(new Date(), "YYYYMD"));
     };
+    isBeforeMarch1 = function(d) {
+      if (d.getMonth != null) {
+        return d.getMonth() < 4;
+      }
+    };
     leapYearsBetween = function(d1, d2) {
-      var y;
-      d1 = d1.getFullYear != null ? d1.getFullYear : +d1;
-      d2 = d2.getFullYear != null ? d2.getFullYear : +d2;
-      return foldl(add, 0, ((function() {
+      var y, y1, y2, _ref;
+      if (d1 > d2) {
+        _ref = [d2, d1], d1 = _ref[0], d2 = _ref[1];
+      }
+      y1 = d1.getFullYear != null ? d1.getFullYear() : +d1;
+      y2 = d2.getFullYear != null ? d2.getFullYear() : +d2;
+      if (!isBeforeMarch1(d1)) {
+        y1 = y1 + 1;
+      }
+      if (isBeforeMarch1(d2)) {
+        y2 = y2 - 1;
+      }
+      return foldl((function(a, b) {
+        return a + b;
+      }), 0, (function() {
         var _i, _results;
-        if (isLeapYear(y)) {
-          return 1;
-        } else {
-          _results = [];
-          for (y = _i = d1; d1 <= d2 ? _i <= d2 : _i >= d2; y = d1 <= d2 ? ++_i : --_i) {
-            _results.push(0);
-          }
-          return _results;
+        _results = [];
+        for (y = _i = y1; y1 <= y2 ? _i <= y2 : _i >= y2; y = y1 <= y2 ? ++_i : --_i) {
+          _results.push(isLeapYear(y) ? 1 : 0);
         }
-      })()));
+        return _results;
+      })());
     };
     isLeapYear = function(d) {
       var y;
-      y = d.getFullYear != null ? typeof d.getFullYear === "function" ? d.getFullYear() : void 0 : +d;
+      y = d.getFullYear != null ? d.getFullYear() : +d;
       return y % 400 === 0 || (y % 4 === 0 && y % 100 !== 0);
     };
     millisecondFactors = {
@@ -281,12 +290,24 @@
       "years": 31536e6
     };
     add = function(date, val, unit) {
-      var factor;
+      var d, factor;
       if (unit == null) {
         unit = "second";
       }
-      factor = millisecondFactors[unit] || millisecondFactors[unit + "s"] || 1e3;
-      return new Date(date.getTime() + (val * factor));
+      switch (unit) {
+        case "year":
+        case "years":
+          d = new Date(date.getTime() + (val * millisecondFactors.years));
+          console.log(date.getFullYear(), d.getFullYear(), leapYearsBetween(date, d));
+          return add(d, leapYearsBetween(date, d), "days");
+        case "month":
+        case "months":
+          factor = millisecondFactors[unit] || millisecondFactors[unit + "s"] || 1e3;
+          return new Date(date.getTime() + (val * factor));
+        default:
+          factor = millisecondFactors[unit] || millisecondFactors[unit + "s"] || 1e3;
+          return new Date(date.getTime() + (val * factor));
+      }
     };
     remove = function(date, val, unit) {
       return add(date, -val, unit);

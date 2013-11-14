@@ -89,6 +89,7 @@ describe "tic.isLeapYear(date)", ->
     (expect (tic.isLeapYear 2002)).toEqual false
     (expect (tic.isLeapYear 2003)).toEqual false
     (expect (tic.isLeapYear 2004)).toEqual true
+    (expect (tic.isLeapYear 2005)).toEqual false
 
   it "but then every 100th isn't", ->
     (expect (tic.isLeapYear 2096)).toEqual true
@@ -128,6 +129,16 @@ describe "tic.add(date, amount, unit*)", ->
   it "knows how to add weeks to a date", ->
     (expect (tic.add date, 1, "week" )).toEqual (new Date "2.10.2012 01:03:02")
     (expect (tic.add date, 1, "weeks")).toEqual (new Date "2.10.2012 01:03:02")
+
+  it "knows how to add years to a date", ->
+    (expect (tic.add date, 1, "year" )).toEqual (new Date "2.3.2013 01:03:02")
+    (expect (tic.add date, 1, "years")).toEqual (new Date "2.3.2013 01:03:02")
+
+  it "adding years over leapyears works as expected", ->
+    (expect (tic.add date, 4   , "years")).toEqual (new Date "2.3.2016 01:03:02")
+    (expect (tic.add date, 10  , "years")).toEqual (new Date "2.3.2022 01:03:02")
+    (expect (tic.add date, 100 , "years")).toEqual (new Date "2.3.2112 01:03:02")
+    (expect (tic.add date, 1000, "years")).toEqual (new Date "2.3.3012 01:03:02")
 
 describe "tic.remove(date, amount, unit*)", ->
 
