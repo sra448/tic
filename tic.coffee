@@ -87,13 +87,14 @@ window.tic = do ->
         when "string"
           date = resetTime new Date()
           parseRules = formatStr.match parseFormatRegex
-
           applyRule = (date, rule) ->
             val = str.substr (formatStr.indexOf rule), rule.length
             if parseFunctions[rule]? then parseFunctions[rule] date, val else date
 
-          # apply all the rules from formatStr to our date
-          if parseRules? then foldl applyRule, date, parseRules else date
+          if parseRules?
+            foldl applyRule, date, parseRules
+          else
+            date
 
         when "number" then new Date str
 
