@@ -10,10 +10,10 @@
 * tic.format(date, format*)
 * tic.parse(str, format*)
 * tic.add(date, amount, unit*)
-** units are: `second(s)`, `minute(s)`, `hour(s)`, `day(s)`, `week(s)`, months and `year(s)`
+  * units are: `second(s)`, `minute(s)`, `hour(s)`, `day(s)`, `week(s)`, months and `year(s)`
 * tic.remove(date, amount, unit*)
-** units are: `second(s)`, `minute(s)`, `hour(s)`, `day(s)`, `week(s)`, months and `year(s)`
+  * units are: `second(s)`, `minute(s)`, `hour(s)`, `day(s)`, `week(s)`, months and `year(s)`
 * tic.resetTime(date, time*)
-** time defaults to 00:00:00
+  * time defaults to 00:00:00
 * tic.isToday(date)
 * tic.isLeapYear(date)
