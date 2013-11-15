@@ -71,7 +71,6 @@ describe "tic.parse(string, format*)", ->
     (expect (tic.parse "")).toEqual new Date()
 
   it "works like a reverse format and takes a formatStr as an optional parameter", ->
-
     (expect (tic.parse "12.24.2013")).toEqual (new Date "12.24.2013 00:00:00")
     (expect (tic.parse "24122013", "DDMMYYYY")).toEqual (new Date "12.24.2013 00:00:00")
     (expect (tic.parse "24.12.2013", "DD.MM.YYYY")).toEqual (new Date "12.24.2013 00:00:00")
