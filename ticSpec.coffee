@@ -1,15 +1,21 @@
 date = new Date "2.3.2012 01:03:02"
 
-describe "tic.resetTime(date, time*)", ->
+describe "tic.equals(date1, date2)", ->
 
-  it "defaults to 00:00", ->
-    (expect (tic.resetTime date)).toEqual (new Date "2.3.2012 00:00:00")
+  it "since date1 == date2 doesn't work, there is a little function for that", ->
+    (expect (tic.equals date, new Date "2.3.2012 01:03:02")).toEqual true
+    (expect (tic.equals date, new Date "2.3.2012 01:03:01")).toEqual false
+
+describe "tic.resetTime(date, time*)", ->
 
   it "takes any date, returns it with the provided time (hours:minutes:seconds)", ->
     (expect (tic.resetTime date, "10")).toEqual (new Date "2.3.2012 10:")
     (expect (tic.resetTime date, "10:23")).toEqual (new Date "2.3.2012 10:23:00")
     (expect (tic.resetTime date, "10:23:44")).toEqual (new Date "2.3.2012 10:23:44")
     (expect (tic.resetTime date, "13:23:44")).toEqual (new Date "2.3.2012 13:23:44")
+
+  it "defaults to 00:00", ->
+    (expect (tic.resetTime date)).toEqual (new Date "2.3.2012 00:00:00")
 
 describe "tic.format(date, format*)", ->
 
@@ -61,6 +67,9 @@ describe "tic.parse(string, format*)", ->
   # it "knows how to parse ss",   -> (expect (tic.parse "02", "ss"  )).toEqual
   # it "knows how to parse s",    -> (expect (tic.parse "2", "s"   )).toEqual
 
+  it "returns a date object of the current date, given an empty string or nothing", ->
+    (expect (tic.parse "")).toEqual new Date()
+
   it "works like a reverse format and takes a formatStr as an optional parameter", ->
 
     (expect (tic.parse "12.24.2013")).toEqual (new Date "12.24.2013 00:00:00")
@@ -74,12 +83,9 @@ describe "tic.parse(string, format*)", ->
     (expect (tic.parse "12/24/2013 at 1335", "MM/DD/YYYY at HHmm")).toEqual (new Date "12.24.2013 13:35:00")
     (expect (tic.parse "24-12-2013 13-35", "DD-MM-YYYY HH-mm")).toEqual (new Date "12.24.2013 13:35:00")
 
-  it "returns a date object of the current date, given an empty string or nothing", ->
-    (expect (tic.parse "")).toEqual new Date()
-
 describe "tic.isToday(date)", ->
 
-  it "knows wheater it is today", -> (expect (tic.isToday date)).toEqual false
+  it "knows whether it is today", -> (expect (tic.isToday date)).toEqual false
   it "or not", -> (expect (tic.isToday new Date())).toEqual true
 
 describe "tic.isLeapYear(date)", ->
@@ -129,6 +135,10 @@ describe "tic.add(date, amount, unit*)", ->
   it "knows how to add weeks to a date", ->
     (expect (tic.add date, 1, "week" )).toEqual (new Date "2.10.2012 01:03:02")
     (expect (tic.add date, 1, "weeks")).toEqual (new Date "2.10.2012 01:03:02")
+
+  # it "knows how to add months to a date", ->
+  #   (expect (tic.add date, 1, "month" )).toEqual (new Date "3.4.2012 01:03:02")
+  #   (expect (tic.add date, 1, "months")).toEqual (new Date "3.4.2012 01:03:02")
 
   it "knows how to add years to a date", ->
     (expect (tic.add date, 1, "year" )).toEqual (new Date "2.3.2013 01:03:02")

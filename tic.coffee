@@ -144,10 +144,16 @@ window.tic = do ->
   isToday = (date) ->
     (format date, "YYYYMD") == (format new Date(), "YYYYMD")
 
+  equals = (a, b) -> !(a < b || a > b)
+
   isBeforeMarch1 = (d) -> d.getMonth() < 4 if d.getMonth?
 
-  leapDaysBetween = (d1, d2) ->
-    [d1, d2] = [d2, d1] if d1 > d2
+  isLeapYear = (d) ->
+    y = if d.getFullYear? then d.getFullYear() else +d
+    y % 400 == 0 || (y % 4 == 0 && y % 100 != 0)
+
+  leapDaysBetween = (date1, date2) ->
+    [d1, d2] = if date1 > date2 then [date2, date1] else [date1, date2]
     y1 = if d1.getFullYear? then d1.getFullYear() else +d1
     y2 = if d2.getFullYear? then d2.getFullYear() else +d2
     y1 = y1 + 1 unless isBeforeMarch1 d1
@@ -160,43 +166,46 @@ window.tic = do ->
     else
       0
 
-  isLeapYear = (d) ->
-    y = if d.getFullYear? then d.getFullYear() else +d
-    y % 400 == 0 || (y % 4 == 0 && y % 100 != 0)
+  addLeapDaysR = (d1, d2, dir = 1) ->
+    a = new Date (if dir > 0 then Math.max d1, d2 else Math.min d1, d2)
+    ld = (leapDaysBetween d1, d2) * dir
+    if ld == 0 then a else addLeapDaysR a, (add a, ld, "days"), dir
 
-  millisecondFactors =
+  msFactors =
     "milliseconds": 1
     "seconds"     : 1e3
     "minutes"     : 6e4
     "hours"       : 36e5
     "days"        : 864e5
     "weeks"       : 6048e5
-    "months"      : 2592e6
     "years"       : 31536e6
+
+  daysInMonths = (start_m, mc) ->
+    dms = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    months = if mc > 0 then [start_m..start_m + mc] else [start_m-(mc+1)..start_m-1]
+    foldl ((a, b) -> a + b), 0, (dms[dc % 11] for dc in months)
 
   add = (date, amount, unit = "second") ->
     switch unit
       when "year", "years"
-        d = new Date (date.getTime() + amount * millisecondFactors.years)
-        leapDaysFactor = (amount / (Math.abs amount))
-
-        addLeapDays = (d1, d2) ->
-          d3 = add d2, ((leapDaysBetween d1, d2) * leapDaysFactor), "days"
-          if leapDaysBetween d2, d3 then addLeapDays d2, d3 else d3
-
-        addLeapDays date, d
+        d2 = new Date (date.getTime() + amount*msFactors.years)
+        addLeapDaysR date, d2, (amount / (Math.abs amount))
 
       when "month", "months"
-        factor = millisecondFactors[unit] || millisecondFactors[unit+"s"] || 1e3
-        new Date date.getTime() + (amount * factor)
+        m1 = if date.getMonth? then date.getMonth() else +date
+        d = new Date (date.getTime() + (daysInMonths m1, amount) * msFactors.days)
+        leapDaysFactor = (amount / (Math.abs amount))
+
+        addLeapDaysR date, d, leapDaysFactor
 
       else
-        factor = millisecondFactors[unit] || millisecondFactors[unit+"s"] || 1e3
+        factor = msFactors[unit] || msFactors[unit+"s"] || 1e3
         new Date date.getTime() + (amount * factor)
 
   remove = (date, amount, unit) -> add date, -amount, unit
 
   return {
+    equals: equals,
     resetTime: resetTime
     parse: parse
     format: format

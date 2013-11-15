@@ -3,15 +3,22 @@
 
   date = new Date("2.3.2012 01:03:02");
 
-  describe("tic.resetTime(date, time*)", function() {
-    it("defaults to 00:00", function() {
-      return (expect(tic.resetTime(date))).toEqual(new Date("2.3.2012 00:00:00"));
+  describe("tic.equals(date1, date2)", function() {
+    return it("since date1 == date2 doesn't work, there is a little function for that", function() {
+      (expect(tic.equals(date, new Date("2.3.2012 01:03:02")))).toEqual(true);
+      return (expect(tic.equals(date, new Date("2.3.2012 01:03:01")))).toEqual(false);
     });
-    return it("takes any date, returns it with the provided time (hours:minutes:seconds)", function() {
+  });
+
+  describe("tic.resetTime(date, time*)", function() {
+    it("takes any date, returns it with the provided time (hours:minutes:seconds)", function() {
       (expect(tic.resetTime(date, "10"))).toEqual(new Date("2.3.2012 10:"));
       (expect(tic.resetTime(date, "10:23"))).toEqual(new Date("2.3.2012 10:23:00"));
       (expect(tic.resetTime(date, "10:23:44"))).toEqual(new Date("2.3.2012 10:23:44"));
       return (expect(tic.resetTime(date, "13:23:44"))).toEqual(new Date("2.3.2012 13:23:44"));
+    });
+    return it("defaults to 00:00", function() {
+      return (expect(tic.resetTime(date))).toEqual(new Date("2.3.2012 00:00:00"));
     });
   });
 
@@ -88,7 +95,10 @@
     it("an empty string parses now", function() {
       return (expect(tic.parse(""))).toEqual(new Date);
     });
-    it("works like a reverse format and takes a formatStr as an optional parameter", function() {
+    it("returns a date object of the current date, given an empty string or nothing", function() {
+      return (expect(tic.parse(""))).toEqual(new Date());
+    });
+    return it("works like a reverse format and takes a formatStr as an optional parameter", function() {
       (expect(tic.parse("12.24.2013"))).toEqual(new Date("12.24.2013 00:00:00"));
       (expect(tic.parse("24122013", "DDMMYYYY"))).toEqual(new Date("12.24.2013 00:00:00"));
       (expect(tic.parse("24.12.2013", "DD.MM.YYYY"))).toEqual(new Date("12.24.2013 00:00:00"));
@@ -99,13 +109,10 @@
       (expect(tic.parse("12/24/2013 at 1335", "MM/DD/YYYY at HHmm"))).toEqual(new Date("12.24.2013 13:35:00"));
       return (expect(tic.parse("24-12-2013 13-35", "DD-MM-YYYY HH-mm"))).toEqual(new Date("12.24.2013 13:35:00"));
     });
-    return it("returns a date object of the current date, given an empty string or nothing", function() {
-      return (expect(tic.parse(""))).toEqual(new Date());
-    });
   });
 
   describe("tic.isToday(date)", function() {
-    it("knows wheater it is today", function() {
+    it("knows whether it is today", function() {
       return (expect(tic.isToday(date))).toEqual(false);
     });
     return it("or not", function() {
