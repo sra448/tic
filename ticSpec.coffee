@@ -164,3 +164,13 @@ describe "tic.remove(date, amount, unit*)", ->
   it "knows how to remove weeks from a date", ->
     (expect (tic.remove date, 1, "week" )).toEqual (new Date "1.27.2012 01:03:02")
     (expect (tic.remove date, 1, "weeks")).toEqual (new Date "1.27.2012 01:03:02")
+
+  it "knows how to remove years to a date", ->
+    (expect (tic.remove date, 1, "year" )).toEqual (new Date "2.3.2011 01:03:02")
+    (expect (tic.remove date, 1, "years")).toEqual (new Date "2.3.2011 01:03:02")
+
+  it "removing years over leapyears works as expected", ->
+    (expect (tic.remove date, 4   , "years")).toEqual (new Date "2.3.2008 01:03:02")
+    (expect (tic.remove date, 10  , "years")).toEqual (new Date "2.3.2002 01:03:02")
+    (expect (tic.remove date, 100 , "years")).toEqual (new Date "2.3.1912 01:03:02")
+    (expect (tic.remove date, 1000, "years")).toEqual (new Date "2.3.1012 01:03:02")

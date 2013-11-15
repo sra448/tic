@@ -32,6 +32,8 @@ window.tic = do ->
 
   keys = (obj) -> (k for k, v of obj)
 
+  compact = (xs) -> (x for x in xs when x?)
+
   substr = (str, id, i) -> ("" + str).substr id, i
 
   getConfiguredSubstrFn = (id, i) -> (str) -> substr str, id, i
@@ -144,13 +146,19 @@ window.tic = do ->
 
   isBeforeMarch1 = (d) -> d.getMonth() < 4 if d.getMonth?
 
-  leapYearsBetween = (d1, d2) ->
+  leapDaysBetween = (d1, d2) ->
     [d1, d2] = [d2, d1] if d1 > d2
     y1 = if d1.getFullYear? then d1.getFullYear() else +d1
     y2 = if d2.getFullYear? then d2.getFullYear() else +d2
     y1 = y1 + 1 unless isBeforeMarch1 d1
     y2 = y2 - 1 if isBeforeMarch1 d2
-    foldl ((a, b) -> a + b), 0, ((if isLeapYear y then 1 else 0) for y in [y1..y2])
+
+    if y2 > y1
+      foldl ((a, b) -> a + b), 0, ((if isLeapYear y then 1 else 0) for y in [y1..y2])
+    else if y2 == y1
+      if isLeapYear y2 then 1 else 0
+    else
+      0
 
   isLeapYear = (d) ->
     y = if d.getFullYear? then d.getFullYear() else +d
@@ -166,20 +174,27 @@ window.tic = do ->
     "months"      : 2592e6
     "years"       : 31536e6
 
-  add = (date, val, unit = "second") ->
+  add = (date, amount, unit = "second") ->
     switch unit
       when "year", "years"
-        d = new Date date.getTime() + (val * millisecondFactors.years)
-        console.log date.getFullYear(), d.getFullYear(), (leapYearsBetween date, d)
-        add d, (leapYearsBetween date, d), "days"
+        d = new Date (date.getTime() + amount * millisecondFactors.years)
+        leapDaysFactor = (amount / (Math.abs amount))
+
+        addLeapDays = (d1, d2) ->
+          d3 = add d2, ((leapDaysBetween d1, d2) * leapDaysFactor), "days"
+          if leapDaysBetween d2, d3 then addLeapDays d2, d3 else d3
+
+        addLeapDays date, d
+
       when "month", "months"
         factor = millisecondFactors[unit] || millisecondFactors[unit+"s"] || 1e3
-        new Date date.getTime() + (val * factor)
+        new Date date.getTime() + (amount * factor)
+
       else
         factor = millisecondFactors[unit] || millisecondFactors[unit+"s"] || 1e3
-        new Date date.getTime() + (val * factor)
+        new Date date.getTime() + (amount * factor)
 
-  remove = (date, val, unit) -> add date, -val, unit
+  remove = (date, amount, unit) -> add date, -amount, unit
 
   return {
     resetTime: resetTime

@@ -2,7 +2,7 @@
   var __slice = [].slice;
 
   window.tic = (function() {
-    var add, apply, clone, compose, curry, dotExec, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isLeapYear, isToday, keys, lang, langs, leapYearsBetween, millisecondFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, resetTime, substr;
+    var add, apply, clone, compact, compose, curry, dotExec, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isLeapYear, isToday, keys, lang, langs, leapDaysBetween, millisecondFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, resetTime, substr;
     langs = {
       "en-US": {
         stdDateFormat: "MM/DD/YYYY",
@@ -56,6 +56,17 @@
       for (k in obj) {
         v = obj[k];
         _results.push(k);
+      }
+      return _results;
+    };
+    compact = function(xs) {
+      var x, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = xs.length; _i < _len; _i++) {
+        x = xs[_i];
+        if (x != null) {
+          _results.push(x);
+        }
       }
       return _results;
     };
@@ -250,7 +261,7 @@
         return d.getMonth() < 4;
       }
     };
-    leapYearsBetween = function(d1, d2) {
+    leapDaysBetween = function(d1, d2) {
       var y, y1, y2, _ref;
       if (d1 > d2) {
         _ref = [d2, d1], d1 = _ref[0], d2 = _ref[1];
@@ -263,16 +274,26 @@
       if (isBeforeMarch1(d2)) {
         y2 = y2 - 1;
       }
-      return foldl((function(a, b) {
-        return a + b;
-      }), 0, (function() {
-        var _i, _results;
-        _results = [];
-        for (y = _i = y1; y1 <= y2 ? _i <= y2 : _i >= y2; y = y1 <= y2 ? ++_i : --_i) {
-          _results.push(isLeapYear(y) ? 1 : 0);
+      if (y2 > y1) {
+        return foldl((function(a, b) {
+          return a + b;
+        }), 0, (function() {
+          var _i, _results;
+          _results = [];
+          for (y = _i = y1; y1 <= y2 ? _i <= y2 : _i >= y2; y = y1 <= y2 ? ++_i : --_i) {
+            _results.push(isLeapYear(y) ? 1 : 0);
+          }
+          return _results;
+        })());
+      } else if (y2 === y1) {
+        if (isLeapYear(y2)) {
+          return 1;
+        } else {
+          return 0;
         }
-        return _results;
-      })());
+      } else {
+        return 0;
+      }
     };
     isLeapYear = function(d) {
       var y;
@@ -289,28 +310,37 @@
       "months": 2592e6,
       "years": 31536e6
     };
-    add = function(date, val, unit) {
-      var d, factor;
+    add = function(date, amount, unit) {
+      var addLeapDays, d, factor, leapDaysFactor;
       if (unit == null) {
         unit = "second";
       }
       switch (unit) {
         case "year":
         case "years":
-          d = new Date(date.getTime() + (val * millisecondFactors.years));
-          console.log(date.getFullYear(), d.getFullYear(), leapYearsBetween(date, d));
-          return add(d, leapYearsBetween(date, d), "days");
+          d = new Date(date.getTime() + amount * millisecondFactors.years);
+          leapDaysFactor = amount / (Math.abs(amount));
+          addLeapDays = function(d1, d2) {
+            var d3;
+            d3 = add(d2, (leapDaysBetween(d1, d2)) * leapDaysFactor, "days");
+            if (leapDaysBetween(d2, d3)) {
+              return addLeapDays(d2, d3);
+            } else {
+              return d3;
+            }
+          };
+          return addLeapDays(date, d);
         case "month":
         case "months":
           factor = millisecondFactors[unit] || millisecondFactors[unit + "s"] || 1e3;
-          return new Date(date.getTime() + (val * factor));
+          return new Date(date.getTime() + (amount * factor));
         default:
           factor = millisecondFactors[unit] || millisecondFactors[unit + "s"] || 1e3;
-          return new Date(date.getTime() + (val * factor));
+          return new Date(date.getTime() + (amount * factor));
       }
     };
-    remove = function(date, val, unit) {
-      return add(date, -val, unit);
+    remove = function(date, amount, unit) {
+      return add(date, -amount, unit);
     };
     return {
       resetTime: resetTime,
