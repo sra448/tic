@@ -2,7 +2,7 @@
   var __slice = [].slice;
 
   window.tic = (function() {
-    var add, addLeapDaysR, apply, clone, compact, compose, curry, daysInMonths, dotExec, equals, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isLeapYear, isToday, keys, lang, langs, leapDaysBetween, msFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, resetTime, substr;
+    var add, addLeapDaysR, apply, clone, compact, compose, curry, daysForMonths, dotExec, equals, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isLeapYear, isToday, keys, lang, langs, leapDaysBetween, msFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, resetTime, substr;
     langs = {
       "en-US": {
         stdDateFormat: "MM/DD/YYYY",
@@ -261,7 +261,7 @@
     };
     isBeforeMarch1 = function(d) {
       if (d.getMonth != null) {
-        return d.getMonth() < 4;
+        return d.getMonth() < 2;
       }
     };
     isLeapYear = function(d) {
@@ -274,7 +274,7 @@
       _ref = date1 > date2 ? [date2, date1] : [date1, date2], d1 = _ref[0], d2 = _ref[1];
       y1 = d1.getFullYear != null ? d1.getFullYear() : +d1;
       y2 = d2.getFullYear != null ? d2.getFullYear() : +d2;
-      if (!isBeforeMarch1(d1)) {
+      if (!(isBeforeMarch1(d1))) {
         y1 = y1 + 1;
       }
       if (isBeforeMarch1(d2)) {
@@ -316,39 +316,56 @@
     };
     msFactors = {
       "milliseconds": 1,
+      "ms": 1,
       "seconds": 1e3,
+      "s": 1e3,
       "minutes": 6e4,
+      "min": 6e4,
       "hours": 36e5,
+      "h": 36e5,
       "days": 864e5,
+      "d": 864e5,
       "weeks": 6048e5,
-      "years": 31536e6
+      "w": 6048e5,
+      "years": 31536e6,
+      "y": 31536e6
     };
-    daysInMonths = function(start_m, mc) {
-      var dc, dms, months, _i, _j, _ref, _ref1, _ref2, _results, _results1;
+    daysForMonths = function(start_m, mc) {
+      var dms, i, m, mis, months, _, _i, _ref, _ref1, _results;
+      m = start_m.getMonth != null ? start_m.getMonth() : start_m - 1;
       dms = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-      months = mc > 0 ? (function() {
+      mis = (function() {
+        var _i, _len, _results;
         _results = [];
-        for (var _i = start_m, _ref = start_m + mc; start_m <= _ref ? _i <= _ref : _i >= _ref; start_m <= _ref ? _i++ : _i--){ _results.push(_i); }
+        for (i = _i = 0, _len = dms.length; _i < _len; i = ++_i) {
+          _ = dms[i];
+          _results.push(i);
+        }
         return _results;
-      }).apply(this) : (function() {
-        _results1 = [];
-        for (var _j = _ref1 = start_m - (mc + 1), _ref2 = start_m - 1; _ref1 <= _ref2 ? _j <= _ref2 : _j >= _ref2; _ref1 <= _ref2 ? _j++ : _j--){ _results1.push(_j); }
-        return _results1;
+      })();
+      if (mc < 0) {
+        dms = [30, 31, 30, 31, 31, 30, 31, 30, 31, 28, 31, 31];
+        mis = mis.reverse();
+      }
+      months = (function() {
+        _results = [];
+        for (var _i = _ref = mis[m], _ref1 = mis[m] + (Math.abs(mc)) - 1; _ref <= _ref1 ? _i <= _ref1 : _i >= _ref1; _ref <= _ref1 ? _i++ : _i--){ _results.push(_i); }
+        return _results;
       }).apply(this);
       return foldl((function(a, b) {
         return a + b;
       }), 0, (function() {
-        var _k, _len, _results2;
-        _results2 = [];
-        for (_k = 0, _len = months.length; _k < _len; _k++) {
-          dc = months[_k];
-          _results2.push(dms[dc % 11]);
+        var _j, _len, _results1;
+        _results1 = [];
+        for (_j = 0, _len = months.length; _j < _len; _j++) {
+          i = months[_j];
+          _results1.push(dms[i % 11]);
         }
-        return _results2;
+        return _results1;
       })());
     };
     add = function(date, amount, unit) {
-      var d, d2, factor, leapDaysFactor, m1;
+      var d, d2, factor;
       if (unit == null) {
         unit = "second";
       }
@@ -359,10 +376,9 @@
           return addLeapDaysR(date, d2, amount / (Math.abs(amount)));
         case "month":
         case "months":
-          m1 = date.getMonth != null ? date.getMonth() : +date;
-          d = new Date(date.getTime() + (daysInMonths(m1, amount)) * msFactors.days);
-          leapDaysFactor = amount / (Math.abs(amount));
-          return addLeapDaysR(date, d, leapDaysFactor);
+          factor = amount / (Math.abs(amount));
+          d = new Date(date.getTime() + (daysForMonths(date, amount)) * factor * msFactors.days);
+          return addLeapDaysR(date, d, factor);
         default:
           factor = msFactors[unit] || msFactors[unit + "s"] || 1e3;
           return new Date(date.getTime() + (amount * factor));

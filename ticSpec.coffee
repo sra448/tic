@@ -135,9 +135,9 @@ describe "tic.add(date, amount, unit*)", ->
     (expect (tic.add date, 1, "week" )).toEqual (new Date "2.10.2012 01:03:02")
     (expect (tic.add date, 1, "weeks")).toEqual (new Date "2.10.2012 01:03:02")
 
-  # it "knows how to add months to a date", ->
-  #   (expect (tic.add date, 1, "month" )).toEqual (new Date "3.4.2012 01:03:02")
-  #   (expect (tic.add date, 1, "months")).toEqual (new Date "3.4.2012 01:03:02")
+  it "knows how to add months to a date", ->
+    (expect (tic.add date, 1, "month" )).toEqual (new Date "3.3.2012 01:03:02")
+    (expect (tic.add date, 1, "months")).toEqual (new Date "3.3.2012 01:03:02")
 
   it "knows how to add years to a date", ->
     (expect (tic.add date, 1, "year" )).toEqual (new Date "2.3.2013 01:03:02")
@@ -173,6 +173,13 @@ describe "tic.remove(date, amount, unit*)", ->
   it "knows how to remove weeks from a date", ->
     (expect (tic.remove date, 1, "week" )).toEqual (new Date "1.27.2012 01:03:02")
     (expect (tic.remove date, 1, "weeks")).toEqual (new Date "1.27.2012 01:03:02")
+
+  it "knows how to remove months to a date", ->
+    (expect (tic.remove date, 1, "month" )).toEqual (new Date "1.3.2012 01:03:02")
+    (expect (tic.remove date, 1, "months")).toEqual (new Date "1.3.2012 01:03:02")
+
+  # it "removing months over leapyears works as expected", ->
+  #   (expect (tic.remove date, 120, "months")).toEqual (new Date "1.3.2012 01:03:02")
 
   it "knows how to remove years to a date", ->
     (expect (tic.remove date, 1, "year" )).toEqual (new Date "2.3.2011 01:03:02")
