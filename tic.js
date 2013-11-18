@@ -2,7 +2,7 @@
   var __slice = [].slice;
 
   window.tic = (function() {
-    var add, addLeapDaysR, apply, clone, compact, compose, curry, daysForMonths, dotExec, equals, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isLeapYear, isToday, keys, lang, langs, leapDaysBetween, msFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, resetTime, substr;
+    var add, addLeapDaysR, apply, clone, compact, compose, curry, daysForMonths, dotExec, equals, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isDST, isLeapYear, isToday, keys, lang, langs, leapDaysBetween, msFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, resetTime, stdTimezoneOffset, substr;
     langs = {
       "en-US": {
         stdDateFormat: "MM/DD/YYYY",
@@ -259,6 +259,15 @@
     equals = function(a, b) {
       return !(a < b || a > b);
     };
+    stdTimezoneOffset = function(date) {
+      var jan, jul;
+      jan = new Date(date.getFullYear(), 0, 1);
+      jul = new Date(date.getFullYear(), 6, 1);
+      return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+    };
+    isDST = function(date) {
+      return date.getTimezoneOffset() < (stdTimezoneOffset(date));
+    };
     isBeforeMarch1 = function(d) {
       if (d.getMonth != null) {
         return d.getMonth() < 2;
@@ -365,20 +374,33 @@
       })());
     };
     add = function(date, amount, unit) {
-      var d, d2, factor;
+      var d, factor;
       if (unit == null) {
         unit = "second";
       }
       switch (unit) {
         case "year":
         case "years":
-          d2 = new Date(date.getTime() + amount * msFactors.years);
-          return addLeapDaysR(date, d2, amount / (Math.abs(amount)));
+        case "y":
+          d = new Date(date.getTime() + amount * msFactors.years);
+          d = addLeapDaysR(date, d, amount / (Math.abs(amount)));
+          return resetTime(d, format(date, "HH:mm:SS"));
         case "month":
         case "months":
+        case "m":
           factor = amount / (Math.abs(amount));
-          d = new Date(date.getTime() + (daysForMonths(date, amount)) * factor * msFactors.days);
-          return addLeapDaysR(date, d, factor);
+          d = add(date, (daysForMonths(date, amount)) * factor, "days");
+          d = addLeapDaysR(date, d, factor);
+          return resetTime(d, format(date, "HH:mm:SS"));
+        case "week":
+        case "weeks":
+        case "w":
+        case "day":
+        case "days":
+        case "d":
+          factor = msFactors[unit] || msFactors[unit + "s"] || 1e3;
+          d = new Date(date.getTime() + (amount * factor));
+          return resetTime(d, format(date, "HH:mm:SS"));
         default:
           factor = msFactors[unit] || msFactors[unit + "s"] || 1e3;
           return new Date(date.getTime() + (amount * factor));
@@ -395,7 +417,8 @@
       add: add,
       remove: remove,
       isToday: isToday,
-      isLeapYear: isLeapYear
+      isLeapYear: isLeapYear,
+      isDST: isDST
     };
   })();
 

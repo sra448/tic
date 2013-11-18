@@ -3,7 +3,7 @@ window.tic = do ->
   # tic has some languages
   langs =
     "en-US":
-      stdDateFormat: "MM/DD/YYYY",
+      stdDateFormat: "MM/DD/YYYY"
       days         : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
       months       : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
       monthsShort  : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -146,6 +146,13 @@ window.tic = do ->
 
   equals = (a, b) -> !(a < b || a > b)
 
+  stdTimezoneOffset = (date) ->
+    jan = new Date date.getFullYear(), 0, 1
+    jul = new Date date.getFullYear(), 6, 1
+    Math.max jan.getTimezoneOffset(), jul.getTimezoneOffset()
+
+  isDST = (date) -> date.getTimezoneOffset() < (stdTimezoneOffset date)
+
   isBeforeMarch1 = (d) -> d.getMonth() < 2 if d.getMonth?
 
   isLeapYear = (d) ->
@@ -192,14 +199,21 @@ window.tic = do ->
 
   add = (date, amount, unit = "second") ->
     switch unit
-      when "year", "years"
-        d2 = new Date (date.getTime() + amount*msFactors.years)
-        addLeapDaysR date, d2, (amount / (Math.abs amount))
+      when "year", "years", "y"
+        d = new Date (date.getTime() + amount*msFactors.years)
+        d = addLeapDaysR date, d, (amount / (Math.abs amount))
+        resetTime d, (format date, "HH:mm:SS")
 
-      when "month", "months"
+      when "month", "months", "m"
         factor = (amount / (Math.abs amount))
-        d = new Date (date.getTime() + (daysForMonths date, amount) * factor * msFactors.days)
-        addLeapDaysR date, d, factor
+        d = add date, (daysForMonths date, amount) * factor, "days"
+        d = addLeapDaysR date, d, factor
+        resetTime d, (format date, "HH:mm:SS")
+
+      when "week", "weeks", "w", "day", "days", "d"
+        factor = msFactors[unit] || msFactors[unit+"s"] || 1e3
+        d = new Date date.getTime() + (amount * factor)
+        resetTime d, (format date, "HH:mm:SS")
 
       else
         factor = msFactors[unit] || msFactors[unit+"s"] || 1e3
@@ -216,4 +230,5 @@ window.tic = do ->
     remove: remove
     isToday: isToday
     isLeapYear: isLeapYear
+    isDST: isDST
   }

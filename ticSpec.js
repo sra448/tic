@@ -167,15 +167,44 @@
     });
     it("knows how to add days to a date", function() {
       (expect(tic.add(date, 1, "day"))).toEqual(new Date("2.4.2012 01:03:02"));
-      return (expect(tic.add(date, 1, "days"))).toEqual(new Date("2.4.2012 01:03:02"));
+      (expect(tic.add(date, 2, "days"))).toEqual(new Date("2.5.2012 01:03:02"));
+      (expect(tic.add(date, 3, "days"))).toEqual(new Date("2.6.2012 01:03:02"));
+      (expect(tic.add(date, 4, "days"))).toEqual(new Date("2.7.2012 01:03:02"));
+      (expect(tic.add(date, 5, "days"))).toEqual(new Date("2.8.2012 01:03:02"));
+      (expect(tic.add(date, 10, "days"))).toEqual(new Date("2.13.2012 01:03:02"));
+      (expect(tic.add(date, 20, "days"))).toEqual(new Date("2.23.2012 01:03:02"));
+      (expect(tic.add(date, 29, "days"))).toEqual(new Date("3.3.2012 01:03:02"));
+      return (expect(tic.add(date, 366, "days"))).toEqual(new Date("2.3.2013 01:03:02"));
     });
     it("knows how to add weeks to a date", function() {
       (expect(tic.add(date, 1, "week"))).toEqual(new Date("2.10.2012 01:03:02"));
       return (expect(tic.add(date, 1, "weeks"))).toEqual(new Date("2.10.2012 01:03:02"));
     });
     it("knows how to add months to a date", function() {
-      (expect(tic.add(date, 1, "month"))).toEqual(new Date("3.3.2012 01:03:02"));
-      return (expect(tic.add(date, 1, "months"))).toEqual(new Date("3.3.2012 01:03:02"));
+      var cases, k, v, _results;
+      cases = {
+        "1": "3.3.2012 01:03:02",
+        "2": "4.3.2012 01:03:02",
+        "3": "5.3.2012 01:03:02",
+        "4": "6.3.2012 01:03:02",
+        "5": "7.3.2012 01:03:02",
+        "6": "8.3.2012 01:03:02",
+        "7": "9.3.2012 01:03:02",
+        "8": "10.3.2012 01:03:02",
+        "9": "11.3.2012 01:03:02",
+        "10": "12.3.2012 01:03:02",
+        "11": "1.3.2013 01:03:02",
+        "12": "2.3.2013 01:03:02"
+      };
+      _results = [];
+      for (k in cases) {
+        v = cases[k];
+        _results.push((expect(tic.add(date, k, "months"))).toEqual(new Date(v)));
+      }
+      return _results;
+    });
+    it("adding months over leapyears works as expected", function() {
+      return (expect(tic.add(date, 12, "months"))).toEqual(new Date("2.3.2013 01:03:02"));
     });
     it("knows how to add years to a date", function() {
       (expect(tic.add(date, 1, "year"))).toEqual(new Date("2.3.2013 01:03:02"));
