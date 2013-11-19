@@ -1,6 +1,44 @@
 date = new Date "2.3.2012 01:03:02"
 
-describe "tic.equals(date1, date2)", ->
+describe "tic.compare(date1, date2, precision*)", ->
+
+  it "returns 1 if the second date is bigger", ->
+    (expect (tic.compare date, (new Date "2.4.2012 01:03:02"))).toEqual 1
+
+  it "returns -1 if the second date is smaller", ->
+    (expect (tic.compare date, (new Date "2.1.2012 01:03:02"))).toEqual -1
+
+  it "returns 0 if the dates are equal", ->
+    (expect (tic.compare date, (new Date "2.3.2012 01:03:02"))).toEqual 0
+
+  it "can handle pseudo-equality down to seconds", ->
+    (expect (tic.compare date, (new Date "2.3.2012 01:03:03"), "min")).toEqual 0
+
+  it "can handle pseudo-equality down to minutes", ->
+    (expect (tic.compare date, (new Date "2.3.2012 01:03:03"), "min")).toEqual 0
+    (expect (tic.compare date, (new Date "2.3.2012 01:03:43"), "min")).toEqual 0
+
+  it "can handle pseudo-equality down to hours", ->
+    (expect (tic.compare date, (new Date "2.3.2012 01:01:02"), "h")).toEqual 0
+    (expect (tic.compare date, (new Date "2.3.2012 01:39:33"), "h")).toEqual 0
+
+  it "can handle pseudo-equality down to days", ->
+    (expect (tic.compare date, (new Date "2.3.2012 03:03:02"), "d")).toEqual 0
+    (expect (tic.compare date, (new Date "2.3.2012 10:23:02"), "d")).toEqual 0
+
+  # it "can handle pseudo-equality down to weeks", ->
+  #   (expect (tic.compare date, (new Date "2.3.2012 01:03:02"), "min")).toEqual 0
+  #   (expect (tic.compare date, (new Date "2.3.2012 01:03:02"), "min")).toEqual 0
+
+  it "can handle pseudo-equality down to months", ->
+    (expect (tic.compare date, (new Date "2.1.2012 01:03:02"), "m")).toEqual 0
+    (expect (tic.compare date, (new Date "2.5.2012 02:04:02"), "m")).toEqual 0
+
+  it "can handle pseudo-equality down to years", ->
+    (expect (tic.compare date, (new Date "4.9.2012 01:53:02"), "y")).toEqual 0
+    (expect (tic.compare date, (new Date "12.3.2012 11:03:02"), "y")).toEqual 0
+
+describe "tic.equals(date1, date2, precision*)", ->
 
   it "is an easy way to test equality of values (instead of identity as in ==)  ", ->
     (expect (tic.equals date, new Date "2.3.2012 01:03:02")).toEqual true

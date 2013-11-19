@@ -145,22 +145,31 @@ window.tic = do ->
       (if formatFunctions[g]? then formatFunctions[g] date else g)
     ).join ""
 
-  isToday = (date) ->
-    (format date, "YYYYMD") == (format new Date(), "YYYYMD")
+  isPast = (date, precision = "d") ->
+    (compare new Date(), date, precision) < 0
 
-  equals = (a, b, precision) ->
+  isToday = (date, precision = "d") ->
+    (compare new Date(), date, precision) == 0
+
+  isFuture = (date, precision = "d") ->
+    (compare  new Date(), date, precision) > 0
+
+  compare = (a, b, precision) ->
     if !precision?
-      !(a < b || a > b)
+      if a < b then 1 else (if a > b then -1 else 0)
     else
       switch precision
-        when "y", "year", "years" then equals a, b, "YYYY"
-        when "m", "month", "months" then equals a, b, "YYYYMM"
+        when "y", "year", "years" then compare a, b, "YYYY"
+        when "m", "month", "months" then compare a, b, "YYYYMM"
         # when "w", "week", "weeks" then addWeeks date, +amount
-        when "d", "day", "days" then equals a, b, "YYYYMMDD"
-        when "h", "hour", "hours" then equals a, b, "YYYYMMDDHH"
-        when "min", "minute", "minutes" then equals a, b, "YYYYMMDDHHmm"
-        when "s", "second", "seconds" then equals a, b, "YYYYMMDDHHmmSS"
-        else (format a, precision) == (format b, precision)
+        when "d", "day", "days" then compare a, b, "YYYYMMDD"
+        when "h", "hour", "hours" then compare a, b, "YYYYMMDDHH"
+        when "min", "minute", "minutes" then compare a, b, "YYYYMMDDHHmm"
+        when "s", "second", "seconds" then compare a, b, "YYYYMMDDHHmmSS"
+        else compare +(format a, precision), +(format b, precision)
+
+  equals = (a, b, precision) ->
+    (compare a, b, precision) == 0
 
   stdTimezoneOffset = (date) ->
     jan = new Date date.getFullYear(), 0, 1
@@ -255,7 +264,8 @@ window.tic = do ->
   decrement = (date, amount, unit) -> add date, -1, unit
 
   return {
-    equals: equals,
+    compare: compare
+    equals: equals
     resetTime: resetTime
     parse: parse
     format: format
