@@ -2,7 +2,7 @@
   var __slice = [].slice;
 
   window.tic = (function() {
-    var add, addDays, addHours, addLeapDaysR, addMilliseconds, addMinutes, addMonths, addSeconds, addWeeks, addYears, apply, clone, compact, compare, compose, curry, daysForMonths, decrement, dot, dotExec, drop, equals, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isDST, isFuture, isLeapYear, isPast, isToday, keys, lang, langs, leapDaysBetween, msFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, repeat, resetTime, stdTimezoneOffset, substr, take;
+    var add, addDays, addHours, addLeapDaysR, addMilliseconds, addMinutes, addMonths, addSeconds, addWeeks, addYears, apply, clone, compact, compare, compose, curry, daysForMonths, decrement, dot, dotExec, drop, equals, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isBetween, isDST, isFuture, isLeapYear, isPast, isToday, keys, lang, langs, leapDaysBetween, msFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, repeat, resetTime, stdTimezoneOffset, substr, take, ticObj;
     langs = {
       "en-US": {
         stdDateFormat: "MM/DD/YYYY",
@@ -308,6 +308,10 @@
           case "second":
           case "seconds":
             return compare(a, b, "YYYYMMDDHHmmSS");
+          case "ms":
+          case "mlliisecond":
+          case "milliseconds":
+            return compare(a, b);
           default:
             return compare(+(format(a, precision)), +(format(b, precision)));
         }
@@ -333,6 +337,9 @@
         precision = "d";
       }
       return (compare(new Date(), date, precision)) > 0;
+    };
+    isBetween = function(date, date1, date2, precision) {
+      return (compare(date1, date, precision)) >= 0 && (compare(date2, date, precision)) <= 0;
     };
     stdTimezoneOffset = function(date) {
       var jan, jul;
@@ -482,6 +489,10 @@
         case "second":
         case "seconds":
           return addSeconds(date, +amount);
+        case "ms":
+        case "millisecond":
+        case "milliseconds":
+          return addMilliseconds(date, +amount);
         default:
           return addMilliseconds(date, +amount);
       }
@@ -495,7 +506,7 @@
     decrement = function(date, amount, unit) {
       return add(date, -1, unit);
     };
-    return {
+    return ticObj = {
       compare: compare,
       equals: equals,
       resetTime: resetTime,
@@ -505,7 +516,10 @@
       increment: increment,
       remove: remove,
       decrement: decrement,
+      isPast: isPast,
       isToday: isToday,
+      isFuture: isFuture,
+      isBetween: isBetween,
       isLeapYear: isLeapYear,
       isDST: isDST
     };

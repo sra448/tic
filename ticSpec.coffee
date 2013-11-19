@@ -1,4 +1,5 @@
 date = new Date "2.3.2012 01:03:02"
+date2 = new Date "2.3.2022 01:03:02"
 
 describe "tic.compare(date1, date2, precision*)", ->
 
@@ -126,7 +127,7 @@ describe "tic.parse(string, format*)", ->
   # it "knows how to parse s",    -> (expect (tic.parse "2", "s"   )).toEqual
 
   it "returns a date object of the current date, given an empty string or nothing", ->
-    (expect (tic.parse "")).toEqual new Date()
+    (expect (tic.parse "")).toEqual new Date
 
   it "works like a reverse format and takes a formatStr as an optional parameter", ->
     (expect (tic.parse "12.24.2013")).toEqual (new Date "12.24.2013 00:00:00")
@@ -140,10 +141,43 @@ describe "tic.parse(string, format*)", ->
     (expect (tic.parse "12/24/2013 at 1335", "MM/DD/YYYY at HHmm")).toEqual (new Date "12.24.2013 13:35:00")
     (expect (tic.parse "24-12-2013 13-35", "DD-MM-YYYY HH-mm")).toEqual (new Date "12.24.2013 13:35:00")
 
+describe "tic.isPast(date, precision*)", ->
+
+  it "knows if a date is in the past", ->
+    (expect (tic.isPast date)).toEqual true
+    (expect (tic.isPast new Date)).toEqual false
+
+  it "takes day as the default precision", ->
+    (expect (tic.isPast (tic.resetTime new Date))).toEqual false
+    (expect (tic.isPast (tic.remove new Date, 1))).toEqual true
+
+  it "but can be as accurately as one millisecond", ->
+    (expect (tic.isPast (tic.remove new Date, 1, "ms"), "ms")).toEqual true
+    (expect (tic.isPast new Date)).toEqual false
+
 describe "tic.isToday(date)", ->
 
-  it "knows whether it is today", -> (expect (tic.isToday date)).toEqual false
-  it "or not", -> (expect (tic.isToday new Date())).toEqual true
+  it "knows if it is today", ->
+    (expect (tic.isToday date)).toEqual false
+    (expect (tic.isToday new Date)).toEqual true
+
+describe "tic.isFuture(date, precision*)", ->
+
+  it "knows whether a date is in the future", ->
+    (expect (tic.isFuture date2)).toEqual true
+    (expect (tic.isFuture new Date)).toEqual false
+
+  it "takes day as the default precision", ->
+    (expect (tic.isFuture (tic.resetTime new Date))).toEqual false
+
+  it "but can be as accurately as one millisecond", ->
+    (expect (tic.isFuture (tic.add new Date, "1", "ms"), "ms")).toEqual true
+    (expect (tic.isFuture new Date)).toEqual false
+
+describe "tic.isBetween(date, date1, date2)", ->
+
+  it "knows if a date is between two dates", ->
+    (expect (tic.isBetween new Date, date, date2)).toEqual true
 
 describe "tic.isLeapYear(date)", ->
 

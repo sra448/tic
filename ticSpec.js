@@ -1,7 +1,9 @@
 (function() {
-  var date;
+  var date, date2;
 
   date = new Date("2.3.2012 01:03:02");
+
+  date2 = new Date("2.3.2022 01:03:02");
 
   describe("tic.compare(date1, date2, precision*)", function() {
     it("returns 1 if the second date is bigger", function() {
@@ -155,7 +157,7 @@
       return (expect(tic.parse(""))).toEqual(new Date);
     });
     it("returns a date object of the current date, given an empty string or nothing", function() {
-      return (expect(tic.parse(""))).toEqual(new Date());
+      return (expect(tic.parse(""))).toEqual(new Date);
     });
     return it("works like a reverse format and takes a formatStr as an optional parameter", function() {
       (expect(tic.parse("12.24.2013"))).toEqual(new Date("12.24.2013 00:00:00"));
@@ -170,12 +172,45 @@
     });
   });
 
-  describe("tic.isToday(date)", function() {
-    it("knows whether it is today", function() {
-      return (expect(tic.isToday(date))).toEqual(false);
+  describe("tic.isPast(date, precision*)", function() {
+    it("knows if a date is in the past", function() {
+      (expect(tic.isPast(date))).toEqual(true);
+      return (expect(tic.isPast(new Date))).toEqual(false);
     });
-    return it("or not", function() {
-      return (expect(tic.isToday(new Date()))).toEqual(true);
+    it("takes day as the default precision", function() {
+      (expect(tic.isPast(tic.resetTime(new Date)))).toEqual(false);
+      return (expect(tic.isPast(tic.remove(new Date, 1)))).toEqual(true);
+    });
+    return it("but can be as accurately as one millisecond", function() {
+      (expect(tic.isPast(tic.remove(new Date, 1, "ms"), "ms"))).toEqual(true);
+      return (expect(tic.isPast(new Date))).toEqual(false);
+    });
+  });
+
+  describe("tic.isToday(date)", function() {
+    return it("knows if it is today", function() {
+      (expect(tic.isToday(date))).toEqual(false);
+      return (expect(tic.isToday(new Date))).toEqual(true);
+    });
+  });
+
+  describe("tic.isFuture(date, precision*)", function() {
+    it("knows whether a date is in the future", function() {
+      (expect(tic.isFuture(date2))).toEqual(true);
+      return (expect(tic.isFuture(new Date))).toEqual(false);
+    });
+    it("takes day as the default precision", function() {
+      return (expect(tic.isFuture(tic.resetTime(new Date)))).toEqual(false);
+    });
+    return it("but can be as accurately as one millisecond", function() {
+      (expect(tic.isFuture(tic.add(new Date, "1", "ms"), "ms"))).toEqual(true);
+      return (expect(tic.isFuture(new Date))).toEqual(false);
+    });
+  });
+
+  describe("tic.isBetween(date, date1, date2)", function() {
+    return it("knows if a date is between two dates", function() {
+      return (expect(tic.isBetween(new Date, date, date2))).toEqual(true);
     });
   });
 

@@ -156,6 +156,7 @@ window.tic = do ->
         when "h", "hour", "hours" then compare a, b, "YYYYMMDDHH"
         when "min", "minute", "minutes" then compare a, b, "YYYYMMDDHHmm"
         when "s", "second", "seconds" then compare a, b, "YYYYMMDDHHmmSS"
+        when "ms", "mlliisecond", "milliseconds" then compare a, b
         else compare +(format a, precision), +(format b, precision)
 
   equals = (a, b, precision) ->
@@ -169,6 +170,9 @@ window.tic = do ->
 
   isFuture = (date, precision = "d") ->
     (compare  new Date(), date, precision) > 0
+
+  isBetween = (date, date1, date2, precision) ->
+    (compare date1, date, precision) >= 0 && (compare date2, date, precision) <= 0
 
   stdTimezoneOffset = (date) ->
     jan = new Date date.getFullYear(), 0, 1
@@ -251,6 +255,7 @@ window.tic = do ->
       when "h", "hour", "hours" then addHours date, +amount
       when "min", "minute", "minutes" then addMinutes date, +amount
       when "s", "second", "seconds" then addSeconds date, +amount
+      when "ms", "millisecond", "milliseconds" then addMilliseconds date, +amount
       else addMilliseconds date, +amount
 
   remove = (date, amount, unit) -> add date, -amount, unit
@@ -259,7 +264,7 @@ window.tic = do ->
 
   decrement = (date, amount, unit) -> add date, -1, unit
 
-  return {
+  ticObj =
     compare: compare
     equals: equals
     resetTime: resetTime
@@ -269,7 +274,9 @@ window.tic = do ->
     increment: increment
     remove: remove
     decrement: decrement
+    isPast: isPast
     isToday: isToday
+    isFuture: isFuture
+    isBetween: isBetween
     isLeapYear: isLeapYear
     isDST: isDST
-  }
