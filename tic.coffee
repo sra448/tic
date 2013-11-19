@@ -248,7 +248,9 @@ window.tic = do ->
     parse: parse
     format: format
     add: add
+    increment: increment
     remove: remove
+    decrement: decrement
     isToday: isToday
     isLeapYear: isLeapYear
     isDST: isDST
