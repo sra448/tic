@@ -2,7 +2,7 @@
   var __slice = [].slice;
 
   window.tic = (function() {
-    var add, addDays, addHours, addLeapDaysR, addMilliseconds, addMinutes, addMonths, addSeconds, addWeeks, addYears, apply, clone, compact, compose, curry, daysForMonths, decrement, dotExec, drop, equals, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isDST, isLeapYear, isToday, keys, lang, langs, leapDaysBetween, msFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, repeat, resetTime, stdTimezoneOffset, substr, take;
+    var add, addDays, addHours, addLeapDaysR, addMilliseconds, addMinutes, addMonths, addSeconds, addWeeks, addYears, apply, clone, compact, compose, curry, daysForMonths, decrement, dot, dotExec, drop, equals, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isDST, isLeapYear, isToday, keys, lang, langs, leapDaysBetween, msFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, repeat, resetTime, stdTimezoneOffset, substr, take;
     langs = {
       "en-US": {
         stdDateFormat: "MM/DD/YYYY",
@@ -51,7 +51,7 @@
       }
     };
     take = function(xs, t) {
-      return xs.slice(i);
+      return xs.slice(t);
     };
     drop = function(xs, t) {
       return xs.splice(t);
@@ -106,16 +106,16 @@
         return num + "";
       }
     };
-    getAttribute = function(obj, attribute) {
+    dot = function(obj, attribute) {
       return obj[attribute];
-    };
-    getLanguageLookupFn = function(key) {
-      return curry(getAttribute, lang[key]);
     };
     dotExec = function(p) {
       return function(obj) {
         return obj[p]();
       };
+    };
+    getLanguageLookupFn = function(key) {
+      return curry(dot, lang[key]);
     };
     clone = function(d) {
       return new Date(d);
@@ -271,8 +271,39 @@
     isToday = function(date) {
       return (format(date, "YYYYMD")) === (format(new Date(), "YYYYMD"));
     };
-    equals = function(a, b) {
-      return !(a < b || a > b);
+    equals = function(a, b, precision) {
+      if (precision == null) {
+        return !(a < b || a > b);
+      } else {
+        switch (precision) {
+          case "y":
+          case "year":
+          case "years":
+            return equals(a, b, "YYYY");
+          case "m":
+          case "month":
+          case "months":
+            return equals(a, b, "YYYYMM");
+          case "d":
+          case "day":
+          case "days":
+            return equals(a, b, "YYYYMMDD");
+          case "h":
+          case "hour":
+          case "hours":
+            return equals(a, b, "YYYYMMDDHH");
+          case "min":
+          case "minute":
+          case "minutes":
+            return equals(a, b, "YYYYMMDDHHmm");
+          case "s":
+          case "second":
+          case "seconds":
+            return equals(a, b, "YYYYMMDDHHmmSS");
+          default:
+            return (format(a, precision)) === (format(b, precision));
+        }
+      }
     };
     stdTimezoneOffset = function(date) {
       var jan, jul;
@@ -382,7 +413,7 @@
       return resetTime(d, format(date, "HH:mm:SS"));
     };
     addHours = function(date, amount) {
-      return addMilliseconds(date, amount * msFactor.hour);
+      return addMilliseconds(date, amount * msFactors.hour);
     };
     addMinutes = function(date, amount) {
       return addMilliseconds(date, amount * msFactors.minute);
@@ -445,7 +476,9 @@
       parse: parse,
       format: format,
       add: add,
+      increment: increment,
       remove: remove,
+      decrement: decrement,
       isToday: isToday,
       isLeapYear: isLeapYear,
       isDST: isDST

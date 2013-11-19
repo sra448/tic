@@ -4,9 +4,33 @@
   date = new Date("2.3.2012 01:03:02");
 
   describe("tic.equals(date1, date2)", function() {
-    return it("since date1 == date2 doesn't work, there is a little function for that", function() {
+    it("is an easy way to test equality of values (instead of identity as in ==)  ", function() {
       (expect(tic.equals(date, new Date("2.3.2012 01:03:02")))).toEqual(true);
       return (expect(tic.equals(date, new Date("2.3.2012 01:03:01")))).toEqual(false);
+    });
+    it("can handle pseudo-equality down to seconds", function() {
+      (expect(tic.equals(date, new Date("2.3.2012 01:03:02"), "s"))).toEqual(true);
+      return (expect(tic.equals(date, new Date("2.3.2012 01:03:01"), "s"))).toEqual(false);
+    });
+    it("can handle pseudo-equality down to minutes", function() {
+      (expect(tic.equals(date, new Date("2.3.2012 01:03:01"), "min"))).toEqual(true);
+      return (expect(tic.equals(date, new Date("2.3.2012 01:02:02"), "min"))).toEqual(false);
+    });
+    it("can handle pseudo-equality down to hours", function() {
+      (expect(tic.equals(date, new Date("2.3.2012 01:05:11"), "h"))).toEqual(true);
+      return (expect(tic.equals(date, new Date("2.3.2012 02:03:01"), "h"))).toEqual(false);
+    });
+    it("can handle pseudo-equality down to days", function() {
+      (expect(tic.equals(date, new Date("2.3.2012 11:03:02"), "d"))).toEqual(true);
+      return (expect(tic.equals(date, new Date("2.4.2012 01:03:02"), "d"))).toEqual(false);
+    });
+    it("can handle pseudo-equality down to months", function() {
+      (expect(tic.equals(date, new Date("2.13.2012 01:03:02"), "m"))).toEqual(true);
+      return (expect(tic.equals(date, new Date("3.3.2012 01:03:02"), "m"))).toEqual(false);
+    });
+    return it("can handle pseudo-equality down to years", function() {
+      (expect(tic.equals(date, new Date("5.13.2012 01:03:02"), "y"))).toEqual(true);
+      return (expect(tic.equals(date, new Date("2.3.2013 01:03:02"), "y"))).toEqual(false);
     });
   });
 

@@ -28,7 +28,7 @@ window.tic = do ->
 
   first = (xs) -> xs[0] if xs? && xs.length > 0
 
-  take = (xs, t) -> xs.slice i
+  take = (xs, t) -> xs.slice t
 
   drop = (xs, t) -> xs.splice t
 
@@ -49,13 +49,13 @@ window.tic = do ->
   padNumber = (num, targetLength = 2) ->
     if (num+"").length < targetLength then padNumber "0#{num}", targetLength else num+""
 
-  getAttribute = (obj, attribute) -> obj[attribute]
-
-  getLanguageLookupFn = (key) -> curry getAttribute, lang[key]
+  dot = (obj, attribute) -> obj[attribute]
 
   dotExec = (p) -> (obj) -> obj[p]()
 
   # more tic specific stuff
+
+  getLanguageLookupFn = (key) -> curry dot, lang[key]
 
   clone = (d) -> new Date d
 
@@ -148,7 +148,19 @@ window.tic = do ->
   isToday = (date) ->
     (format date, "YYYYMD") == (format new Date(), "YYYYMD")
 
-  equals = (a, b) -> !(a < b || a > b)
+  equals = (a, b, precision) ->
+    if !precision?
+      !(a < b || a > b)
+    else
+      switch precision
+        when "y", "year", "years" then equals a, b, "YYYY"
+        when "m", "month", "months" then equals a, b, "YYYYMM"
+        # when "w", "week", "weeks" then addWeeks date, +amount
+        when "d", "day", "days" then equals a, b, "YYYYMMDD"
+        when "h", "hour", "hours" then equals a, b, "YYYYMMDDHH"
+        when "min", "minute", "minutes" then equals a, b, "YYYYMMDDHHmm"
+        when "s", "second", "seconds" then equals a, b, "YYYYMMDDHHmmSS"
+        else (format a, precision) == (format b, precision)
 
   stdTimezoneOffset = (date) ->
     jan = new Date date.getFullYear(), 0, 1
@@ -217,7 +229,7 @@ window.tic = do ->
     d = addMilliseconds date, amount*msFactors.day
     resetTime d, (format date, "HH:mm:SS")
 
-  addHours = (date, amount) -> addMilliseconds date, amount*msFactor.hour
+  addHours = (date, amount) -> addMilliseconds date, amount*msFactors.hour
 
   addMinutes = (date, amount) -> addMilliseconds date, amount*msFactors.minute
 
