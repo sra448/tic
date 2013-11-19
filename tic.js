@@ -2,7 +2,7 @@
   var __slice = [].slice;
 
   window.tic = (function() {
-    var add, addLeapDaysR, apply, clone, compact, compose, curry, daysForMonths, dotExec, equals, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isDST, isLeapYear, isToday, keys, lang, langs, leapDaysBetween, msFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, resetTime, stdTimezoneOffset, substr;
+    var add, addDays, addHours, addLeapDaysR, addMonths, addWeeks, addYears, apply, clone, compact, compose, curry, daysForMonths, dotExec, drop, equals, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isDST, isLeapYear, isToday, keys, lang, langs, leapDaysBetween, msFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, repeat, resetTime, stdTimezoneOffset, substr, take;
     langs = {
       "en-US": {
         stdDateFormat: "MM/DD/YYYY",
@@ -49,6 +49,21 @@
       if ((xs != null) && xs.length > 0) {
         return xs[0];
       }
+    };
+    take = function(xs, t) {
+      return xs.slice(i);
+    };
+    drop = function(xs, t) {
+      return xs.splice(t);
+    };
+    repeat = function(xs, t) {
+      var i, l, _i, _ref, _results;
+      l = xs.length - 1;
+      _results = [];
+      for (i = _i = 0, _ref = t - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        _results.push(xs[i % l]);
+      }
+      return _results;
     };
     keys = function(obj) {
       var k, v, _results;
@@ -324,86 +339,86 @@
       }
     };
     msFactors = {
-      "milliseconds": 1,
-      "ms": 1,
-      "seconds": 1e3,
-      "s": 1e3,
-      "minutes": 6e4,
-      "min": 6e4,
-      "hours": 36e5,
-      "h": 36e5,
-      "days": 864e5,
-      "d": 864e5,
-      "weeks": 6048e5,
-      "w": 6048e5,
-      "years": 31536e6,
-      "y": 31536e6
+      "millisecond": 1,
+      "second": 1e3,
+      "minute": 6e4,
+      "hour": 36e5,
+      "day": 864e5,
+      "week": 6048e5,
+      "year": 31536e6
     };
-    daysForMonths = function(start_m, mc) {
-      var dms, i, m, mis, months, _, _i, _ref, _ref1, _results;
-      m = start_m.getMonth != null ? start_m.getMonth() : start_m - 1;
-      dms = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-      mis = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (i = _i = 0, _len = dms.length; _i < _len; i = ++_i) {
-          _ = dms[i];
-          _results.push(i);
-        }
-        return _results;
-      })();
+    daysForMonths = function(m, mc) {
+      var days;
+      days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
       if (mc < 0) {
-        dms = [30, 31, 30, 31, 31, 30, 31, 30, 31, 28, 31, 31];
-        mis = mis.reverse();
+        days = days.reverse();
+        m = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].reverse()[m] - 1;
       }
-      months = (function() {
-        _results = [];
-        for (var _i = _ref = mis[m], _ref1 = mis[m] + (Math.abs(mc)) - 1; _ref <= _ref1 ? _i <= _ref1 : _i >= _ref1; _ref <= _ref1 ? _i++ : _i--){ _results.push(_i); }
-        return _results;
-      }).apply(this);
-      return foldl((function(a, b) {
+      return drop(repeat(days, (Math.abs(mc)) + m), m);
+    };
+    addYears = function(date, amount) {
+      var d;
+      d = new Date(date.getTime() + amount * msFactors.year);
+      d = addLeapDaysR(date, d, amount / (Math.abs(amount)));
+      return resetTime(d, format(date, "HH:mm:SS"));
+    };
+    addMonths = function(date, amount) {
+      var d, days, factor;
+      factor = amount / (Math.abs(amount));
+      days = foldl((function(a, b) {
         return a + b;
-      }), 0, (function() {
-        var _j, _len, _results1;
-        _results1 = [];
-        for (_j = 0, _len = months.length; _j < _len; _j++) {
-          i = months[_j];
-          _results1.push(dms[i % 11]);
-        }
-        return _results1;
-      })());
+      }), 0, daysForMonths(date.getMonth(), amount));
+      d = addLeapDaysR(date, addDays(date, days * factor), factor);
+      return resetTime(d, format(date, "HH:mm:SS"));
+    };
+    addWeeks = function(date, amount) {
+      var d;
+      d = new Date(date.getTime() + amount * msFactors.week);
+      return resetTime(d, format(date, "HH:mm:SS"));
+    };
+    addDays = function(date, amount) {
+      var d;
+      d = new Date(date.getTime() + amount * msFactors.day);
+      return resetTime(d, format(date, "HH:mm:SS"));
+    };
+    addHours = function(date, amount) {
+      return new Date(date.getTime() + amount * msFactor.hour);
     };
     add = function(date, amount, unit) {
-      var d, factor;
       if (unit == null) {
         unit = "second";
       }
       switch (unit) {
+        case "y":
         case "year":
         case "years":
-        case "y":
-          d = new Date(date.getTime() + amount * msFactors.years);
-          d = addLeapDaysR(date, d, amount / (Math.abs(amount)));
-          return resetTime(d, format(date, "HH:mm:SS"));
+          return addYears(date, +amount);
+        case "m":
         case "month":
         case "months":
-        case "m":
-          factor = amount / (Math.abs(amount));
-          d = add(date, (daysForMonths(date, amount)) * factor, "days");
-          d = addLeapDaysR(date, d, factor);
-          return resetTime(d, format(date, "HH:mm:SS"));
+          return addMonths(date, +amount);
+        case "w":
         case "week":
         case "weeks":
-        case "w":
+          return addWeeks(date, +amount);
+        case "d":
         case "day":
         case "days":
-        case "d":
-          factor = msFactors[unit] || msFactors[unit + "s"] || 1e3;
-          d = new Date(date.getTime() + (amount * factor));
-          return resetTime(d, format(date, "HH:mm:SS"));
+          return addDays(date, +amount);
+        case "h":
+        case "hour":
+        case "hours":
+          return new Date(date.getTime() + amount * msFactors.hour);
+        case "min":
+        case "minute":
+        case "minutes":
+          return new Date(date.getTime() + amount * msFactors.minute);
+        case "s":
+        case "second":
+        case "seconds":
+          return new Date(date.getTime() + amount * msFactors.second);
         default:
-          factor = msFactors[unit] || msFactors[unit + "s"] || 1e3;
-          return new Date(date.getTime() + (amount * factor));
+          return new Date(date.getTime() + amount);
       }
     };
     remove = function(date, amount, unit) {

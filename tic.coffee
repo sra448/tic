@@ -27,8 +27,14 @@ window.tic = do ->
     if xs.length == 0 then f a, x else foldl f, (f a, x), xs
 
   first = (xs) -> xs[0] if xs? && xs.length > 0
-  # rest = (xs) -> xs.slice 1 if xs?
-  # last = (xs) -> xs[xs.length-1] if xs?
+
+  take = (xs, t) -> xs.slice i
+
+  drop = (xs, t) -> xs.splice t
+
+  repeat = (xs, t) ->
+    l = xs.length - 1
+    (xs[i % l] for i in [0..t-1])
 
   keys = (obj) -> (k for k, v of obj)
 
@@ -98,7 +104,6 @@ window.tic = do ->
             date
 
         when "number" then new Date str
-
         else new Date()
 
   formatFunctions =
@@ -132,7 +137,6 @@ window.tic = do ->
       preGroup = (formatStr.substr 0, groupId) if groupId != 0
       newFormatStr = formatStr.substr (groupId + group.length)
       (if preGroup? then [preGroup, group] else [group]).concat (formatStrGroups newFormatStr)
-
     else
       [formatStr]
 
@@ -179,45 +183,53 @@ window.tic = do ->
     if ld == 0 then a else addLeapDaysR a, (add a, ld, "days"), dir
 
   msFactors =
-    "milliseconds": 1         , "ms": 1
-    "seconds"     : 1e3       , "s": 1e3
-    "minutes"     : 6e4       , "min": 6e4
-    "hours"       : 36e5      , "h": 36e5
-    "days"        : 864e5     , "d": 864e5
-    "weeks"       : 6048e5    , "w": 6048e5
-    "years"       : 31536e6   , "y": 31536e6
+    "millisecond": 1
+    "second"     : 1e3
+    "minute"     : 6e4
+    "hour"       : 36e5
+    "day"        : 864e5
+    "week"       : 6048e5
+    "year"       : 31536e6
 
-  daysForMonths = (start_m, mc) ->
-    m = if start_m.getMonth? then start_m.getMonth() else start_m - 1
-    dms = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    mis = (i for _, i in dms)
+  daysForMonths = (m, mc) ->
+    days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     if mc < 0
-      dms = [30, 31, 30, 31, 31, 30, 31, 30, 31, 28, 31, 31]
-      mis = mis.reverse()
-    months = [mis[m]..(mis[m] + (Math.abs mc) - 1)]
-    foldl ((a, b) -> a + b), 0, (dms[i % 11] for i in months)
+      days = days.reverse()
+      m = [0..11].reverse()[m] - 1
+    drop (repeat days, (Math.abs mc) + m), m
+
+  addYears = (date, amount) ->
+    d = new Date (date.getTime() + amount * msFactors.year)
+    d = addLeapDaysR date, d, (amount / (Math.abs amount))
+    resetTime d, (format date, "HH:mm:SS")
+
+  addMonths = (date, amount) ->
+    factor = (amount / (Math.abs amount))
+    days = foldl ((a, b) -> a + b), 0, (daysForMonths date.getMonth(), amount)
+    d = addLeapDaysR date, (addDays date, days*factor), factor
+    resetTime d, (format date, "HH:mm:SS")
+
+  addWeeks = (date, amount) ->
+    d = new Date (date.getTime() + amount * msFactors.week)
+    resetTime d, (format date, "HH:mm:SS")
+
+  addDays = (date, amount) ->
+    d = new Date (date.getTime() + amount * msFactors.day)
+    resetTime d, (format date, "HH:mm:SS")
+
+  addHours = (date, amount) ->
+    new Date (date.getTime() + amount * msFactor.hour)
 
   add = (date, amount, unit = "second") ->
     switch unit
-      when "year", "years", "y"
-        d = new Date (date.getTime() + amount*msFactors.years)
-        d = addLeapDaysR date, d, (amount / (Math.abs amount))
-        resetTime d, (format date, "HH:mm:SS")
-
-      when "month", "months", "m"
-        factor = (amount / (Math.abs amount))
-        d = add date, (daysForMonths date, amount) * factor, "days"
-        d = addLeapDaysR date, d, factor
-        resetTime d, (format date, "HH:mm:SS")
-
-      when "week", "weeks", "w", "day", "days", "d"
-        factor = msFactors[unit] || msFactors[unit+"s"] || 1e3
-        d = new Date date.getTime() + (amount * factor)
-        resetTime d, (format date, "HH:mm:SS")
-
-      else
-        factor = msFactors[unit] || msFactors[unit+"s"] || 1e3
-        new Date date.getTime() + (amount * factor)
+      when "y", "year", "years" then addYears date, +amount
+      when "m", "month", "months" then addMonths date, +amount
+      when "w", "week", "weeks" then addWeeks date, +amount
+      when "d", "day", "days" then addDays date, +amount
+      when "h", "hour", "hours" then new Date (date.getTime() + amount * msFactors.hour)
+      when "min", "minute", "minutes" then new Date (date.getTime() + amount * msFactors.minute)
+      when "s", "second", "seconds" then new Date (date.getTime() + amount * msFactors.second)
+      else new Date (date.getTime() + amount)
 
   remove = (date, amount, unit) -> add date, -amount, unit
 
