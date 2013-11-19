@@ -12,8 +12,11 @@
       }
     };
     lang = langs["en-US"];
-    apply = function(f, args) {
-      return f.apply(window, args);
+    apply = function(f, args, obj) {
+      if (obj == null) {
+        obj = window;
+      }
+      return f.apply(obj, args);
     };
     curry = function() {
       var args, f;
@@ -268,24 +271,6 @@
         return _results;
       })()).join("");
     };
-    isPast = function(date, precision) {
-      if (precision == null) {
-        precision = "d";
-      }
-      return (compare(new Date(), date, precision)) < 0;
-    };
-    isToday = function(date, precision) {
-      if (precision == null) {
-        precision = "d";
-      }
-      return (compare(new Date(), date, precision)) === 0;
-    };
-    isFuture = function(date, precision) {
-      if (precision == null) {
-        precision = "d";
-      }
-      return (compare(new Date(), date, precision)) > 0;
-    };
     compare = function(a, b, precision) {
       if (precision == null) {
         if (a < b) {
@@ -331,6 +316,24 @@
     equals = function(a, b, precision) {
       return (compare(a, b, precision)) === 0;
     };
+    isPast = function(date, precision) {
+      if (precision == null) {
+        precision = "d";
+      }
+      return (compare(new Date(), date, precision)) < 0;
+    };
+    isToday = function(date, precision) {
+      if (precision == null) {
+        precision = "d";
+      }
+      return (compare(new Date(), date, precision)) === 0;
+    };
+    isFuture = function(date, precision) {
+      if (precision == null) {
+        precision = "d";
+      }
+      return (compare(new Date(), date, precision)) > 0;
+    };
     stdTimezoneOffset = function(date) {
       var jan, jul;
       jan = new Date(date.getFullYear(), 0, 1);
@@ -351,17 +354,19 @@
       return y % 400 === 0 || (y % 4 === 0 && y % 100 !== 0);
     };
     leapDaysBetween = function(date1, date2) {
-      var d1, d2, y, y1, y2, _ref;
-      _ref = date1 > date2 ? [date2, date1] : [date1, date2], d1 = _ref[0], d2 = _ref[1];
-      y1 = d1.getFullYear != null ? d1.getFullYear() : +d1;
-      y2 = d2.getFullYear != null ? d2.getFullYear() : +d2;
-      if (!(isBeforeMarch1(d1))) {
+      var y, y1, y2, _ref;
+      if (date1 > date2) {
+        _ref = [date2, date1], date1 = _ref[0], date2 = _ref[1];
+      }
+      y1 = date1.getFullYear();
+      if (!(isBeforeMarch1(date1))) {
         y1 = y1 + 1;
       }
-      if (isBeforeMarch1(d2)) {
+      y2 = date2.getFullYear();
+      if (isBeforeMarch1(date2)) {
         y2 = y2 - 1;
       }
-      if (y2 > y1) {
+      if (!(y2 < y1)) {
         return foldl((function(a, b) {
           return a + b;
         }), 0, (function() {
@@ -372,12 +377,6 @@
           }
           return _results;
         })());
-      } else if (y2 === y1) {
-        if (isLeapYear(y2)) {
-          return 1;
-        } else {
-          return 0;
-        }
       } else {
         return 0;
       }
@@ -452,7 +451,7 @@
     };
     add = function(date, amount, unit) {
       if (unit == null) {
-        unit = "second";
+        unit = "d";
       }
       switch (unit) {
         case "y":

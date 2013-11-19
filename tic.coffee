@@ -13,7 +13,7 @@ window.tic = do ->
 
   # internal functions
 
-  apply = (f, args) -> f.apply window, args
+  apply = (f, args, obj = window) -> f.apply obj, args
 
   curry = (f, args...) ->
     (moreArgs...) -> f.apply this, (args.concat moreArgs)
@@ -145,15 +145,6 @@ window.tic = do ->
       (if formatFunctions[g]? then formatFunctions[g] date else g)
     ).join ""
 
-  isPast = (date, precision = "d") ->
-    (compare new Date(), date, precision) < 0
-
-  isToday = (date, precision = "d") ->
-    (compare new Date(), date, precision) == 0
-
-  isFuture = (date, precision = "d") ->
-    (compare  new Date(), date, precision) > 0
-
   compare = (a, b, precision) ->
     if !precision?
       if a < b then 1 else (if a > b then -1 else 0)
@@ -161,7 +152,6 @@ window.tic = do ->
       switch precision
         when "y", "year", "years" then compare a, b, "YYYY"
         when "m", "month", "months" then compare a, b, "YYYYMM"
-        # when "w", "week", "weeks" then addWeeks date, +amount
         when "d", "day", "days" then compare a, b, "YYYYMMDD"
         when "h", "hour", "hours" then compare a, b, "YYYYMMDDHH"
         when "min", "minute", "minutes" then compare a, b, "YYYYMMDDHHmm"
@@ -170,6 +160,15 @@ window.tic = do ->
 
   equals = (a, b, precision) ->
     (compare a, b, precision) == 0
+
+  isPast = (date, precision = "d") ->
+    (compare new Date(), date, precision) < 0
+
+  isToday = (date, precision = "d") ->
+    (compare new Date(), date, precision) == 0
+
+  isFuture = (date, precision = "d") ->
+    (compare  new Date(), date, precision) > 0
 
   stdTimezoneOffset = (date) ->
     jan = new Date date.getFullYear(), 0, 1
@@ -185,16 +184,13 @@ window.tic = do ->
     y % 400 == 0 || (y % 4 == 0 && y % 100 != 0)
 
   leapDaysBetween = (date1, date2) ->
-    [d1, d2] = if date1 > date2 then [date2, date1] else [date1, date2]
-    y1 = if d1.getFullYear? then d1.getFullYear() else +d1
-    y2 = if d2.getFullYear? then d2.getFullYear() else +d2
-    y1 = y1 + 1 if !(isBeforeMarch1 d1)
-    y2 = y2 - 1 if isBeforeMarch1 d2
-
-    if y2 > y1
+    [date1, date2] = [date2, date1] if date1 > date2
+    y1 = date1.getFullYear()
+    y1 = y1 + 1 if !(isBeforeMarch1 date1)
+    y2 = date2.getFullYear()
+    y2 = y2 - 1 if isBeforeMarch1 date2
+    unless y2 < y1
       foldl ((a, b) -> a + b), 0, ((if isLeapYear y then 1 else 0) for y in [y1..y2])
-    else if y2 == y1
-      if isLeapYear y2 then 1 else 0
     else
       0
 
@@ -246,7 +242,7 @@ window.tic = do ->
 
   addMilliseconds = (date, amount) -> new Date (date.getTime() + amount)
 
-  add = (date, amount, unit = "second") ->
+  add = (date, amount, unit = "d") ->
     switch unit
       when "y", "year", "years" then addYears date, +amount
       when "m", "month", "months" then addMonths date, +amount

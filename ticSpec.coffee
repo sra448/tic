@@ -26,10 +26,6 @@ describe "tic.compare(date1, date2, precision*)", ->
     (expect (tic.compare date, (new Date "2.3.2012 03:03:02"), "d")).toEqual 0
     (expect (tic.compare date, (new Date "2.3.2012 10:23:02"), "d")).toEqual 0
 
-  # it "can handle pseudo-equality down to weeks", ->
-  #   (expect (tic.compare date, (new Date "2.3.2012 01:03:02"), "min")).toEqual 0
-  #   (expect (tic.compare date, (new Date "2.3.2012 01:03:02"), "min")).toEqual 0
-
   it "can handle pseudo-equality down to months", ->
     (expect (tic.compare date, (new Date "2.1.2012 01:03:02"), "m")).toEqual 0
     (expect (tic.compare date, (new Date "2.5.2012 02:04:02"), "m")).toEqual 0
@@ -59,10 +55,6 @@ describe "tic.equals(date1, date2, precision*)", ->
   it "can handle pseudo-equality down to days", ->
     (expect (tic.equals date, (new Date "2.3.2012 11:03:02"), "d")).toEqual true
     (expect (tic.equals date, (new Date "2.4.2012 01:03:02"), "d")).toEqual false
-
-  # it "can handle pseudo-equality down to weeks", ->
-  #   (expect (tic.equals date, (new Date "2.3.2012 01:03:02"), "w")).toEqual true
-  #   (expect (tic.equals date, (new Date "2.3.2012 01:03:02"), "w")).toEqual false
 
   it "can handle pseudo-equality down to months", ->
     (expect (tic.equals date, (new Date "2.13.2012 01:03:02"), "m")).toEqual true
@@ -178,8 +170,8 @@ describe "tic.isLeapYear(date)", ->
 
 describe "tic.add(date, amount, unit*)", ->
 
-  it "defaults to seconds", ->
-    (expect (tic.add date, 1)).toEqual (new Date "2.3.2012 01:03:03")
+  it "defaults to days", ->
+    (expect (tic.add date, 1)).toEqual (new Date "2.4.2012 01:03:02")
 
   it "knows how to add seconds to a date", ->
     (expect (tic.add date, 1, "second" )).toEqual (new Date "2.3.2012 01:03:03")
@@ -240,8 +232,8 @@ describe "tic.add(date, amount, unit*)", ->
 
 describe "tic.remove(date, amount, unit*)", ->
 
-  it "defaults to seconds", ->
-    (expect (tic.remove date, 1)).toEqual (new Date "2.3.2012 01:03:01")
+  it "defaults to days", ->
+    (expect (tic.remove date, 1)).toEqual (new Date "2.2.2012 01:03:02")
 
   it "knows how to remove seconds from a date", ->
     (expect (tic.remove date, 1, "second" )).toEqual (new Date "2.3.2012 01:03:01")

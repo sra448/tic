@@ -209,8 +209,8 @@
   });
 
   describe("tic.add(date, amount, unit*)", function() {
-    it("defaults to seconds", function() {
-      return (expect(tic.add(date, 1))).toEqual(new Date("2.3.2012 01:03:03"));
+    it("defaults to days", function() {
+      return (expect(tic.add(date, 1))).toEqual(new Date("2.4.2012 01:03:02"));
     });
     it("knows how to add seconds to a date", function() {
       (expect(tic.add(date, 1, "second"))).toEqual(new Date("2.3.2012 01:03:03"));
@@ -275,8 +275,8 @@
   });
 
   describe("tic.remove(date, amount, unit*)", function() {
-    it("defaults to seconds", function() {
-      return (expect(tic.remove(date, 1))).toEqual(new Date("2.3.2012 01:03:01"));
+    it("defaults to days", function() {
+      return (expect(tic.remove(date, 1))).toEqual(new Date("2.2.2012 01:03:02"));
     });
     it("knows how to remove seconds from a date", function() {
       (expect(tic.remove(date, 1, "second"))).toEqual(new Date("2.3.2012 01:03:01"));
