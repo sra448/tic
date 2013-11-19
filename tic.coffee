@@ -191,17 +191,17 @@ window.tic = do ->
     "week"       : 6048e5
     "year"       : 31536e6
 
+  addYears = (date, amount) ->
+    d = addMilliseconds date, amount*msFactors.year
+    d = addLeapDaysR date, d, (amount / (Math.abs amount))
+    resetTime d, (format date, "HH:mm:SS")
+
   daysForMonths = (m, mc) ->
     days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     if mc < 0
       days = days.reverse()
       m = [0..11].reverse()[m] - 1
     drop (repeat days, (Math.abs mc) + m), m
-
-  addYears = (date, amount) ->
-    d = new Date (date.getTime() + amount * msFactors.year)
-    d = addLeapDaysR date, d, (amount / (Math.abs amount))
-    resetTime d, (format date, "HH:mm:SS")
 
   addMonths = (date, amount) ->
     factor = (amount / (Math.abs amount))
@@ -210,15 +210,20 @@ window.tic = do ->
     resetTime d, (format date, "HH:mm:SS")
 
   addWeeks = (date, amount) ->
-    d = new Date (date.getTime() + amount * msFactors.week)
+    d = addMilliseconds date, amount*msFactors.week
     resetTime d, (format date, "HH:mm:SS")
 
   addDays = (date, amount) ->
-    d = new Date (date.getTime() + amount * msFactors.day)
+    d = addMilliseconds date, amount*msFactors.day
     resetTime d, (format date, "HH:mm:SS")
 
-  addHours = (date, amount) ->
-    new Date (date.getTime() + amount * msFactor.hour)
+  addHours = (date, amount) -> addMilliseconds date, amount*msFactor.hour
+
+  addMinutes = (date, amount) -> addMilliseconds date, amount*msFactors.minute
+
+  addSeconds = (date, amount) -> addMilliseconds date, amount*msFactors.second
+
+  addMilliseconds = (date, amount) -> new Date (date.getTime() + amount)
 
   add = (date, amount, unit = "second") ->
     switch unit
@@ -226,12 +231,16 @@ window.tic = do ->
       when "m", "month", "months" then addMonths date, +amount
       when "w", "week", "weeks" then addWeeks date, +amount
       when "d", "day", "days" then addDays date, +amount
-      when "h", "hour", "hours" then new Date (date.getTime() + amount * msFactors.hour)
-      when "min", "minute", "minutes" then new Date (date.getTime() + amount * msFactors.minute)
-      when "s", "second", "seconds" then new Date (date.getTime() + amount * msFactors.second)
-      else new Date (date.getTime() + amount)
+      when "h", "hour", "hours" then addHours date, +amount
+      when "min", "minute", "minutes" then addMinutes date, +amount
+      when "s", "second", "seconds" then addSeconds date, +amount
+      else addMilliseconds date, +amount
 
   remove = (date, amount, unit) -> add date, -amount, unit
+
+  increment = (date, amount, unit) -> add date, 1, unit
+
+  decrement = (date, amount, unit) -> add date, -1, unit
 
   return {
     equals: equals,

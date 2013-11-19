@@ -2,7 +2,7 @@
   var __slice = [].slice;
 
   window.tic = (function() {
-    var add, addDays, addHours, addLeapDaysR, addMonths, addWeeks, addYears, apply, clone, compact, compose, curry, daysForMonths, dotExec, drop, equals, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isDST, isLeapYear, isToday, keys, lang, langs, leapDaysBetween, msFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, repeat, resetTime, stdTimezoneOffset, substr, take;
+    var add, addDays, addHours, addLeapDaysR, addMilliseconds, addMinutes, addMonths, addSeconds, addWeeks, addYears, apply, clone, compact, compose, curry, daysForMonths, decrement, dotExec, drop, equals, first, foldl, format, formatFunctions, formatFunctionsRegex, formatStrGroups, getAttribute, getConfiguredSubstrFn, getLanguageLookupFn, increment, isBeforeMarch1, isDST, isLeapYear, isToday, keys, lang, langs, leapDaysBetween, msFactors, padNumber, parse, parseFormatRegex, parseFunctions, remove, repeat, resetTime, stdTimezoneOffset, substr, take;
     langs = {
       "en-US": {
         stdDateFormat: "MM/DD/YYYY",
@@ -347,6 +347,12 @@
       "week": 6048e5,
       "year": 31536e6
     };
+    addYears = function(date, amount) {
+      var d;
+      d = addMilliseconds(date, amount * msFactors.year);
+      d = addLeapDaysR(date, d, amount / (Math.abs(amount)));
+      return resetTime(d, format(date, "HH:mm:SS"));
+    };
     daysForMonths = function(m, mc) {
       var days;
       days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -355,12 +361,6 @@
         m = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].reverse()[m] - 1;
       }
       return drop(repeat(days, (Math.abs(mc)) + m), m);
-    };
-    addYears = function(date, amount) {
-      var d;
-      d = new Date(date.getTime() + amount * msFactors.year);
-      d = addLeapDaysR(date, d, amount / (Math.abs(amount)));
-      return resetTime(d, format(date, "HH:mm:SS"));
     };
     addMonths = function(date, amount) {
       var d, days, factor;
@@ -373,16 +373,25 @@
     };
     addWeeks = function(date, amount) {
       var d;
-      d = new Date(date.getTime() + amount * msFactors.week);
+      d = addMilliseconds(date, amount * msFactors.week);
       return resetTime(d, format(date, "HH:mm:SS"));
     };
     addDays = function(date, amount) {
       var d;
-      d = new Date(date.getTime() + amount * msFactors.day);
+      d = addMilliseconds(date, amount * msFactors.day);
       return resetTime(d, format(date, "HH:mm:SS"));
     };
     addHours = function(date, amount) {
-      return new Date(date.getTime() + amount * msFactor.hour);
+      return addMilliseconds(date, amount * msFactor.hour);
+    };
+    addMinutes = function(date, amount) {
+      return addMilliseconds(date, amount * msFactors.minute);
+    };
+    addSeconds = function(date, amount) {
+      return addMilliseconds(date, amount * msFactors.second);
+    };
+    addMilliseconds = function(date, amount) {
+      return new Date(date.getTime() + amount);
     };
     add = function(date, amount, unit) {
       if (unit == null) {
@@ -408,21 +417,27 @@
         case "h":
         case "hour":
         case "hours":
-          return new Date(date.getTime() + amount * msFactors.hour);
+          return addHours(date, +amount);
         case "min":
         case "minute":
         case "minutes":
-          return new Date(date.getTime() + amount * msFactors.minute);
+          return addMinutes(date, +amount);
         case "s":
         case "second":
         case "seconds":
-          return new Date(date.getTime() + amount * msFactors.second);
+          return addSeconds(date, +amount);
         default:
-          return new Date(date.getTime() + amount);
+          return addMilliseconds(date, +amount);
       }
     };
     remove = function(date, amount, unit) {
       return add(date, -amount, unit);
+    };
+    increment = function(date, amount, unit) {
+      return add(date, 1, unit);
+    };
+    decrement = function(date, amount, unit) {
+      return add(date, -1, unit);
     };
     return {
       equals: equals,
